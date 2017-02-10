@@ -6,10 +6,9 @@ public class Field {
 	public final static int CROSS = 1;
 	public final static int CIRCLE = 2;
 	
-	public static int height;
-	public static int width;
+	public static int lengthOfSide;
 	
-	private int state = 2;
+	private int state = 1;
 	
 	public Field() {
 		

@@ -5,25 +5,26 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.image.ImageObserver;
 
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import kojonek2.tictactoe.common.Field;
 
-public class GameBoardPanel extends JPanel {
+public class GameBoardPanel extends JPanel implements ComponentListener {
 
 	private final int sizeOfGameBoard;
 	private Field[][] gameBoard;
 	private int width, height;
 	
-	public GameBoardPanel(int sizeOfBoard, int width, int height) {
+	public GameBoardPanel(int sizeOfBoard) {
 		super();
+		addComponentListener(this);
 		this.sizeOfGameBoard = sizeOfBoard;
-		this.width = width;
-		this.height = height;
 		createGameBoard(sizeOfBoard);
-		setSize(new Dimension(width, height));
 	}
 
 	private void createGameBoard(int sizeOfGameBoard) {
@@ -39,8 +40,13 @@ public class GameBoardPanel extends JPanel {
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		Graphics2D g2d = (Graphics2D) g;
-		Field.width = width / sizeOfGameBoard;
-		Field.height = height / sizeOfGameBoard;
+		
+		if (width > height) {
+			Field.lengthOfSide = height / sizeOfGameBoard;
+		} else {
+			Field.lengthOfSide = width / sizeOfGameBoard;
+		}
+		
 		for (int i = 0; i < sizeOfGameBoard; i++) {
 			for (int j = 0; j < sizeOfGameBoard; j++) {
 				drawImageOfField(g2d, i, j);
@@ -54,19 +60,40 @@ public class GameBoardPanel extends JPanel {
 		Image imgCircle = Toolkit.getDefaultToolkit()
 				.getImage(GameBoardPanel.class.getResource("/kojonek2/tictactoe/resources/circle_512.png"));
 
-		int dx1 = column * Field.width;
-		int dx2 = (column + 1) * Field.width;
-		int dy1 = row * Field.height;
-		int dy2 = (row + 1) * Field.height;
+		int offsetFromCorner = (int) (0.05 * Field.lengthOfSide);
+		int dx1 = column * Field.lengthOfSide + offsetFromCorner;
+		int dx2 = (column + 1) * Field.lengthOfSide - offsetFromCorner;
+		int dy1 = row * Field.lengthOfSide + offsetFromCorner;
+		int dy2 = (row + 1) * Field.lengthOfSide - offsetFromCorner;
 		int sx1 = 0;
 		int sx2 = 512;
 		int sy1 = 0;
 		int sy2 = 512;
 
 		if (gameBoard[column][row].getState() == Field.CIRCLE) {
-			g2d.drawImage(imgCircle, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, null);
+			g2d.drawImage(imgCircle, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, this);
 		} else if (gameBoard[column][row].getState() == Field.CROSS) {
-			g2d.drawImage(imgCross, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, null);
+			g2d.drawImage(imgCross, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, this);
 		}
 	}
+
+	@Override
+	public void componentResized(ComponentEvent e) {
+		width = (int) getSize().getWidth();
+		height = (int) getSize().getHeight();
+	}
+
+	@Override
+	public void componentMoved(ComponentEvent e) {
+	}
+
+	@Override
+	public void componentShown(ComponentEvent e) {
+	}
+
+	@Override
+	public void componentHidden(ComponentEvent e) {
+	}
+	
+	
 }
