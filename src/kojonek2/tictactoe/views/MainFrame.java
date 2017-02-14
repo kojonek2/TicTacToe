@@ -1,18 +1,14 @@
 package kojonek2.tictactoe.views;
 
-import java.awt.BorderLayout;
 import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import javax.swing.JToggleButton;
 import java.awt.Toolkit;
+
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
-import java.awt.FlowLayout;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.UIManager;
-import java.awt.Rectangle;
+import javax.swing.border.EmptyBorder;
 
 public class MainFrame extends JFrame {
 
@@ -69,7 +65,7 @@ public class MainFrame extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		
-		GameBoardPanel gameBoardPanel = new GameBoardPanel(3);
+		GameBoardPanel gameBoardPanel = new GameBoardPanel(3, 3);
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
