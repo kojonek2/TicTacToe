@@ -6,24 +6,37 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.concurrent.ThreadLocalRandom;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import kojonek2.tictactoe.common.Field;
 
-public class GameBoardPanel extends JPanel implements ComponentListener {
+@SuppressWarnings("serial")
+public class GameBoardPanel extends JPanel implements ComponentListener, MouseListener {
 
+	private JLabel informationLabel;
+	
 	private final int sizeOfGameBoard;
 	private Field[][] gameBoard;
 	private int width, height;
 	private int fieldsNeededForWin;
+	
+	private int turn = Field.BLANK;
 
-	public GameBoardPanel(int sizeOfBoard, int fieldsNeededForWin) {
+	public GameBoardPanel(JLabel jLabel, int sizeOfBoard, int fieldsNeededForWin) {
 		super();
 		addComponentListener(this);
+		addMouseListener(this);
 		this.sizeOfGameBoard = sizeOfBoard;
 		this.fieldsNeededForWin = fieldsNeededForWin;
+		this.informationLabel = jLabel;
 		createGameBoard(sizeOfBoard);
+		nextTurn();
 	}
 
 	public int getSizeOfGameBoard() {
@@ -32,6 +45,19 @@ public class GameBoardPanel extends JPanel implements ComponentListener {
 
 	public Field getFieldFromGameBoard(int x, int y) {
 		return gameBoard[x][y];
+	}
+	
+	private void nextTurn() {
+		if(turn == Field.CROSS) {
+			turn = Field.CIRCLE;
+		} else if (turn == Field.CIRCLE) {
+			turn = Field.CROSS;
+		} else {
+			turn = ThreadLocalRandom.current().nextInt(1, 3);
+		}
+		
+		//display whose player turn is currently
+		SwingUtilities.invokeLater(() -> informationLabel.setText(Integer.toString(turn)));
 	}
 
 	private void createGameBoard(int sizeOfGameBoard) {
@@ -57,6 +83,7 @@ public class GameBoardPanel extends JPanel implements ComponentListener {
 		for (int i = 0; i < sizeOfGameBoard; i++) {
 			for (int j = 0; j < sizeOfGameBoard; j++) {
 				drawImageOfField(g2d, i, j);
+				drawLinesOfField(g2d, i, j);
 			}
 		}
 	}
@@ -84,6 +111,49 @@ public class GameBoardPanel extends JPanel implements ComponentListener {
 		}
 	}
 
+	private void drawLinesOfField(Graphics2D g2d, int column, int row) {
+		if (column < sizeOfGameBoard - 1) {
+			drawVerticalLine(g2d, column, row);	
+		}
+		if (row < sizeOfGameBoard - 1) {
+			drawHorizontalLine(g2d, column, row);
+		}
+	}
+	
+	private void drawVerticalLine(Graphics2D g2d, int column, int row) {
+		Image imgLineVertical = Toolkit.getDefaultToolkit()
+				.getImage(GameBoardPanel.class.getResource("/kojonek2/tictactoe/resources/line_vertical_512.png"));
+		
+		int offsetFromCorner = (int) (0.1 * Field.lengthOfSide);
+		int dx1 = column * Field.lengthOfSide + Field.lengthOfSide / 2 + offsetFromCorner;
+		int dx2 = (column + 1) * Field.lengthOfSide + Field.lengthOfSide / 2 - offsetFromCorner;
+		int dy1 = row * Field.lengthOfSide;
+		int dy2 = (row + 1) * Field.lengthOfSide;
+		int sx1 = 0;
+		int sx2 = 512;
+		int sy1 = 0;
+		int sy2 = 512;
+
+		g2d.drawImage(imgLineVertical, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, this);
+	}
+	
+	private void drawHorizontalLine(Graphics2D g2d, int column, int row) {
+		Image imgLineHorizontal = Toolkit.getDefaultToolkit()
+				.getImage(GameBoardPanel.class.getResource("/kojonek2/tictactoe/resources/line_horizontal_512.png"));
+		
+		int offsetFromCorner = (int) (0.1 * Field.lengthOfSide);
+		int dx1 = column * Field.lengthOfSide;
+		int dx2 = (column + 1) * Field.lengthOfSide;
+		int dy1 = row * Field.lengthOfSide + Field.lengthOfSide / 2 + offsetFromCorner;
+		int dy2 = (row + 1) * Field.lengthOfSide + Field.lengthOfSide / 2 - offsetFromCorner;
+		int sx1 = 0;
+		int sx2 = 512;
+		int sy1 = 0;
+		int sy2 = 512;
+		
+		g2d.drawImage(imgLineHorizontal, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, this);
+	}
+	
 	private int checkForWinner() {
 		for (int x = 0; x < gameBoard.length; x++) {
 			for (int y = 0; y < gameBoard[x].length; y++) {
@@ -92,19 +162,16 @@ public class GameBoardPanel extends JPanel implements ComponentListener {
 				int stateOfField = field.getState();
 				if (stateOfField == Field.CIRCLE) {
 					if (isFieldCreatingWinningRow(Field.CIRCLE, x, y)) {
-						System.out.println("wykrywa kolo");
 						return Field.CIRCLE;
 					}
 				} else if (stateOfField == Field.CROSS) {
 					if (isFieldCreatingWinningRow(Field.CROSS, x, y)) {
-						System.out.println("wykrywa krzyzyk");
 						return Field.CROSS;
 					}
 				}
 
 			}
 		}
-		System.out.println("nikt nie wygrał");
 		return Field.BLANK;
 	}
 
@@ -127,6 +194,17 @@ public class GameBoardPanel extends JPanel implements ComponentListener {
 		height = (int) getSize().getHeight();
 		repaint();
 	}
+	
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		int XOfClickedField = e.getX() / Field.lengthOfSide;
+		int YOfClickedField = e.getY() / Field.lengthOfSide;
+		if (XOfClickedField > sizeOfGameBoard - 1 || YOfClickedField > sizeOfGameBoard - 1) { 
+			return;
+		}
+		// TODO: Implement clicking on fields and game mechanics
+		System.out.println("clicked proper field");
+	}
 
 	@Override
 	public void componentMoved(ComponentEvent e) {
@@ -138,6 +216,22 @@ public class GameBoardPanel extends JPanel implements ComponentListener {
 
 	@Override
 	public void componentHidden(ComponentEvent e) {
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
 	}
 
 }
