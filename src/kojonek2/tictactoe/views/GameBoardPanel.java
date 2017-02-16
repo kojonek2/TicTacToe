@@ -10,6 +10,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.concurrent.ThreadLocalRandom;
 
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -26,7 +27,7 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 	private int width, height;
 	private int fieldsNeededForWin;
 	
-	private int turn = Field.BLANK;
+	private int playerTurn = Field.BLANK;
 
 	public GameBoardPanel(JLabel jLabel, int sizeOfBoard, int fieldsNeededForWin) {
 		super();
@@ -48,16 +49,15 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 	}
 	
 	private void nextTurn() {
-		if(turn == Field.CROSS) {
-			turn = Field.CIRCLE;
-		} else if (turn == Field.CIRCLE) {
-			turn = Field.CROSS;
+		if(playerTurn == Field.CROSS) {
+			playerTurn = Field.CIRCLE;
+		} else if (playerTurn == Field.CIRCLE) {
+			playerTurn = Field.CROSS;
 		} else {
-			turn = ThreadLocalRandom.current().nextInt(1, 3);
+			playerTurn = ThreadLocalRandom.current().nextInt(1, 3);
 		}
 		
-		//display whose player turn is currently
-		SwingUtilities.invokeLater(() -> informationLabel.setText(Integer.toString(turn)));
+		updateInfoLabel();
 	}
 
 	private void createGameBoard(int sizeOfGameBoard) {
@@ -66,6 +66,16 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 			for (int y = 0; y < sizeOfGameBoard; y++) {
 				gameBoard[x][y] = new Field(this, x, y);
 			}
+		}
+	}
+	
+	private void updateInfoLabel() {
+		if(playerTurn == Field.CROSS) {
+			SwingUtilities.invokeLater(() -> informationLabel.setText("Cross"));
+		} else if(playerTurn == Field.CIRCLE) {
+			SwingUtilities.invokeLater(() -> informationLabel.setText("Circle"));
+		} else {
+			SwingUtilities.invokeLater(() -> informationLabel.setText("Error"));
 		}
 	}
 
@@ -177,17 +187,43 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 
 	private boolean isFieldCreatingWinningRow(int stateOfField, int x, int y) {
 		for (int i = -1; i <= 1; i++) {
-			for (int j = -1; i <= 1; i++) {
-
-				boolean result = gameBoard[x][y].isWinningField(stateOfField, fieldsNeededForWin, i, j);
-				if (result) {
-					return true;
+			for (int j = -1; j <= 1; j++) {
+				
+				//don't check this same spot (generates always true when i == 0 and j == 0)
+				if(!(i == 0 && j == 0)) {
+					boolean result = gameBoard[x][y].isWinningField(stateOfField, fieldsNeededForWin, i, j);
+					if (result) {
+						return true;
+					}
 				}
+				
 			}
 		}
 		return false;
 	}
 
+	private void fieldClicked(int x, int y) {
+		Field clickedField = gameBoard[x][y];
+		
+		//work only if clicked on blank field
+		if(!(clickedField.getState() == Field.BLANK)) {
+			return;
+		}
+		clickedField.setState(playerTurn);
+		
+		//repaint after changing one of fields
+		repaint();
+		
+		if(!(checkForWinner() == Field.BLANK)) {
+			JDialog dialog = new WinnerAnnouncer();
+			dialog.setVisible(true);
+			return;
+		}
+		
+		//start next turn
+		nextTurn();
+	}
+	
 	@Override
 	public void componentResized(ComponentEvent e) {
 		width = (int) getSize().getWidth();
@@ -202,8 +238,8 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 		if (XOfClickedField > sizeOfGameBoard - 1 || YOfClickedField > sizeOfGameBoard - 1) { 
 			return;
 		}
-		// TODO: Implement clicking on fields and game mechanics
-		System.out.println("clicked proper field");
+		
+		fieldClicked(XOfClickedField, YOfClickedField);
 	}
 
 	@Override

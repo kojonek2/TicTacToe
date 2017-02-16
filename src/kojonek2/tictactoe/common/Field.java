@@ -10,7 +10,7 @@ public class Field {
 
 	public static int lengthOfSide;
 
-	private int state = 1;
+	private int state = 0;
 
 	private int x;
 	private int y;
@@ -22,12 +22,8 @@ public class Field {
 		this.gameBoard = gameBoard;
 	}
 
-	public void setStateToCircle() {
-		this.state = Field.CIRCLE;
-	}
-
-	public void setStateToCross() {
-		this.state = Field.CROSS;
+	public void setState(int state) {
+		this.state = state;
 	}
 
 	public int getState() {
