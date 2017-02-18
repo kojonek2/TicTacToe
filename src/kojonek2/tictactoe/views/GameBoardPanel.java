@@ -1,5 +1,6 @@
 package kojonek2.tictactoe.views;
 
+import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -26,9 +27,13 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 	private Field[][] gameBoard;
 	private int width, height;
 	private int fieldsNeededForWin;
+	private boolean gameEnded = false;
 	
 	private int playerTurn = Field.BLANK;
-
+	
+	/**
+	*Create game Board
+	*/
 	public GameBoardPanel(JLabel jLabel, int sizeOfBoard, int fieldsNeededForWin) {
 		super();
 		addComponentListener(this);
@@ -46,6 +51,21 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 
 	public Field getFieldFromGameBoard(int x, int y) {
 		return gameBoard[x][y];
+	}
+	
+	public void startNewGame() {
+		//reverting state of the all variables to state from start of the game
+		for(int x = 0; x < gameBoard.length; x++) {
+			for(int y = 0; y < gameBoard.length; y++) {
+				gameBoard[x][y].setState(Field.BLANK);
+			}
+		}
+		playerTurn = Field.BLANK;
+		
+		//it needs to be done like that. Doesn't work in other way. Probably because this is called from WinnerAnnouncer
+		EventQueue.invokeLater(() -> gameEnded = false);
+		nextTurn();
+		repaint();
 	}
 	
 	private void nextTurn() {
@@ -214,9 +234,12 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 		//repaint after changing one of fields
 		repaint();
 		
-		if(!(checkForWinner() == Field.BLANK)) {
-			JDialog dialog = new WinnerAnnouncer();
+		int winner = checkForWinner();
+		if(!(winner == Field.BLANK)) {
+			//game ended announce winner
+			JDialog dialog = new WinnerAnnouncer(this, winner);
 			dialog.setVisible(true);
+			gameEnded = true;
 			return;
 		}
 		
@@ -233,6 +256,10 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 	
 	@Override
 	public void mouseClicked(MouseEvent e) {
+		if(gameEnded) {
+			return;
+		}
+		
 		int XOfClickedField = e.getX() / Field.lengthOfSide;
 		int YOfClickedField = e.getY() / Field.lengthOfSide;
 		if (XOfClickedField > sizeOfGameBoard - 1 || YOfClickedField > sizeOfGameBoard - 1) { 
