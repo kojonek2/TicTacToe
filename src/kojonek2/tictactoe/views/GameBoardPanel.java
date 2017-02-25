@@ -22,25 +22,27 @@ import kojonek2.tictactoe.common.Field;
 public class GameBoardPanel extends JPanel implements ComponentListener, MouseListener {
 
 	private JLabel informationLabel;
-	
+
 	private final int sizeOfGameBoard;
 	private Field[][] gameBoard;
 	private int width, height;
 	private int fieldsNeededForWin;
 	private boolean gameEnded = false;
-	
+
 	private int playerTurn = Field.BLANK;
-	
+
 	/**
-	*Create game Board
-	*/
+	 * Create game Board
+	 */
 	public GameBoardPanel(JLabel jLabel, int sizeOfBoard, int fieldsNeededForWin) {
 		super();
 		addComponentListener(this);
 		addMouseListener(this);
+		
 		this.sizeOfGameBoard = sizeOfBoard;
 		this.fieldsNeededForWin = fieldsNeededForWin;
 		this.informationLabel = jLabel;
+		
 		createGameBoard(sizeOfBoard);
 		nextTurn();
 	}
@@ -52,31 +54,32 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 	public Field getFieldFromGameBoard(int x, int y) {
 		return gameBoard[x][y];
 	}
-	
+
 	public void startNewGame() {
-		//reverting state of the all variables to state from start of the game
-		for(int x = 0; x < gameBoard.length; x++) {
-			for(int y = 0; y < gameBoard.length; y++) {
+		// reverting state of the all variables to state from start of the game
+		for (int x = 0; x < gameBoard.length; x++) {
+			for (int y = 0; y < gameBoard.length; y++) {
 				gameBoard[x][y].setState(Field.BLANK);
 			}
 		}
 		playerTurn = Field.BLANK;
-		
-		//it needs to be done like that. Doesn't work in other way. Probably because this is called from WinnerAnnouncer
+
+		// it needs to be done like that. Doesn't work in other way. Probably
+		// because this is called from WinnerAnnouncer
 		EventQueue.invokeLater(() -> gameEnded = false);
 		nextTurn();
 		repaint();
 	}
-	
+
 	private void nextTurn() {
-		if(playerTurn == Field.CROSS) {
+		if (playerTurn == Field.CROSS) {
 			playerTurn = Field.CIRCLE;
 		} else if (playerTurn == Field.CIRCLE) {
 			playerTurn = Field.CROSS;
 		} else {
 			playerTurn = ThreadLocalRandom.current().nextInt(1, 3);
 		}
-		
+
 		updateInfoLabel();
 	}
 
@@ -88,11 +91,11 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 			}
 		}
 	}
-	
+
 	private void updateInfoLabel() {
-		if(playerTurn == Field.CROSS) {
+		if (playerTurn == Field.CROSS) {
 			SwingUtilities.invokeLater(() -> informationLabel.setText("Cross"));
-		} else if(playerTurn == Field.CIRCLE) {
+		} else if (playerTurn == Field.CIRCLE) {
 			SwingUtilities.invokeLater(() -> informationLabel.setText("Circle"));
 		} else {
 			SwingUtilities.invokeLater(() -> informationLabel.setText("Error"));
@@ -143,17 +146,17 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 
 	private void drawLinesOfField(Graphics2D g2d, int column, int row) {
 		if (column < sizeOfGameBoard - 1) {
-			drawVerticalLine(g2d, column, row);	
+			drawVerticalLine(g2d, column, row);
 		}
 		if (row < sizeOfGameBoard - 1) {
 			drawHorizontalLine(g2d, column, row);
 		}
 	}
-	
+
 	private void drawVerticalLine(Graphics2D g2d, int column, int row) {
 		Image imgLineVertical = Toolkit.getDefaultToolkit()
 				.getImage(GameBoardPanel.class.getResource("/kojonek2/tictactoe/resources/line_vertical_512.png"));
-		
+
 		int offsetFromCorner = (int) (0.1 * Field.lengthOfSide);
 		int dx1 = column * Field.lengthOfSide + Field.lengthOfSide / 2 + offsetFromCorner;
 		int dx2 = (column + 1) * Field.lengthOfSide + Field.lengthOfSide / 2 - offsetFromCorner;
@@ -166,11 +169,11 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 
 		g2d.drawImage(imgLineVertical, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, this);
 	}
-	
+
 	private void drawHorizontalLine(Graphics2D g2d, int column, int row) {
 		Image imgLineHorizontal = Toolkit.getDefaultToolkit()
 				.getImage(GameBoardPanel.class.getResource("/kojonek2/tictactoe/resources/line_horizontal_512.png"));
-		
+
 		int offsetFromCorner = (int) (0.1 * Field.lengthOfSide);
 		int dx1 = column * Field.lengthOfSide;
 		int dx2 = (column + 1) * Field.lengthOfSide;
@@ -180,10 +183,10 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 		int sx2 = 512;
 		int sy1 = 0;
 		int sy2 = 512;
-		
+
 		g2d.drawImage(imgLineHorizontal, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, this);
 	}
-	
+
 	private int checkForWinner() {
 		for (int x = 0; x < gameBoard.length; x++) {
 			for (int y = 0; y < gameBoard[x].length; y++) {
@@ -208,15 +211,16 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 	private boolean isFieldCreatingWinningRow(int stateOfField, int x, int y) {
 		for (int i = -1; i <= 1; i++) {
 			for (int j = -1; j <= 1; j++) {
-				
-				//don't check this same spot (generates always true when i == 0 and j == 0)
-				if(!(i == 0 && j == 0)) {
+
+				// don't check this same spot (generates always true when i == 0
+				// and j == 0)
+				if (!(i == 0 && j == 0)) {
 					boolean result = gameBoard[x][y].isWinningField(stateOfField, fieldsNeededForWin, i, j);
 					if (result) {
 						return true;
 					}
 				}
-				
+
 			}
 		}
 		return false;
@@ -224,48 +228,50 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 
 	private void fieldClicked(int x, int y) {
 		Field clickedField = gameBoard[x][y];
-		
-		//work only if clicked on blank field
-		if(!(clickedField.getState() == Field.BLANK)) {
+
+		// work only if clicked on blank field
+		if (!(clickedField.getState() == Field.BLANK)) {
 			return;
 		}
 		clickedField.setState(playerTurn);
-		
-		//repaint after changing one of fields
+
+		// repaint after changing one of fields
 		repaint();
-		
+
 		int winner = checkForWinner();
-		if(!(winner == Field.BLANK)) {
-			//game ended announce winner
+		if (!(winner == Field.BLANK)) {
+			// game ended announce winner
 			JDialog dialog = new WinnerAnnouncer(this, winner);
 			dialog.setVisible(true);
 			gameEnded = true;
 			return;
 		}
-		
-		//start next turn
+
+		// start next turn
 		nextTurn();
 	}
-	
+
 	@Override
 	public void componentResized(ComponentEvent e) {
 		width = (int) getSize().getWidth();
 		height = (int) getSize().getHeight();
 		repaint();
 	}
-	
+
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		if(gameEnded) {
+		if (gameEnded) {
 			return;
 		}
-		
+
 		int XOfClickedField = e.getX() / Field.lengthOfSide;
 		int YOfClickedField = e.getY() / Field.lengthOfSide;
-		if (XOfClickedField > sizeOfGameBoard - 1 || YOfClickedField > sizeOfGameBoard - 1) { 
+
+		// Check if it was clicked at game board
+		if (XOfClickedField > sizeOfGameBoard - 1 || YOfClickedField > sizeOfGameBoard - 1) {
 			return;
 		}
-		
+
 		fieldClicked(XOfClickedField, YOfClickedField);
 	}
 
