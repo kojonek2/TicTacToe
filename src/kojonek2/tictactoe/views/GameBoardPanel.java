@@ -28,6 +28,7 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 	private int width, height;
 	private int fieldsNeededForWin;
 	private boolean gameEnded = false;
+	private Field startedDragAtField = null;
 
 	private int playerTurn = Field.BLANK;
 
@@ -226,8 +227,7 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 		return false;
 	}
 
-	private void fieldClicked(int x, int y) {
-		Field clickedField = gameBoard[x][y];
+	private void fieldClicked(Field clickedField) {
 
 		// work only if clicked on blank field
 		if (!(clickedField.getState() == Field.BLANK)) {
@@ -257,22 +257,49 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 		height = (int) getSize().getHeight();
 		repaint();
 	}
-
+	
 	@Override
-	public void mouseClicked(MouseEvent e) {
+	public void mousePressed(MouseEvent e) {
 		if (gameEnded) {
 			return;
 		}
 
-		int XOfClickedField = e.getX() / Field.lengthOfSide;
-		int YOfClickedField = e.getY() / Field.lengthOfSide;
+		int xOfInteractedField = e.getX() / Field.lengthOfSide;
+		int yOfInteracteddField = e.getY() / Field.lengthOfSide;
 
 		// Check if it was clicked at game board
-		if (XOfClickedField > sizeOfGameBoard - 1 || YOfClickedField > sizeOfGameBoard - 1) {
+		if (xOfInteractedField > sizeOfGameBoard - 1 || yOfInteracteddField > sizeOfGameBoard - 1) {
 			return;
 		}
 
-		fieldClicked(XOfClickedField, YOfClickedField);
+		startedDragAtField = gameBoard[xOfInteractedField][yOfInteracteddField];
+	}
+	
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		if(startedDragAtField == null) {
+			return;
+		}
+		
+		int xOfInteractedField = e.getX() / Field.lengthOfSide;
+		int yOfInteractedField = e.getY() / Field.lengthOfSide;
+		
+		// Check if it was clicked at game board
+		if (xOfInteractedField > sizeOfGameBoard - 1 || yOfInteractedField > sizeOfGameBoard - 1) {
+			startedDragAtField = null;
+			return;
+		}
+		
+		if(gameBoard[xOfInteractedField][yOfInteractedField] == startedDragAtField) {
+			fieldClicked(startedDragAtField);
+			return;
+		}
+		
+		startedDragAtField = null;
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
 	}
 
 	@Override
@@ -285,14 +312,6 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 
 	@Override
 	public void componentHidden(ComponentEvent e) {
-	}
-
-	@Override
-	public void mousePressed(MouseEvent e) {
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
 	}
 
 	@Override
