@@ -15,25 +15,30 @@ import javax.swing.JPanel;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.EmptyBorder;
 
+import kojonek2.tictactoe.common.Field;
+
 @SuppressWarnings("serial")
 public class MainFrame extends JFrame {
 
 	private JPanel contentPane;
 	private JLabel lblInformation;
 	private JMenuItem miNewGame;
-	private GameBoardPanel gameBoardPanel;
+	private GameBoardPanel gameBoard;
 	private JMenu mnHelp;
 	private JMenuItem miAbout;
 
 	/**
 	 * Create the frame.
 	 */
-	public MainFrame(int sizeOfGameBoard, int fieldsNeededForWin) {
+	public MainFrame(int sizeOfGameBoard, int fieldsNeededForWin, String player1Name, String player2Name) {
 		setTitle("Tic Tac Toe");
 
 		//initializing components and adding events listeners
 		componentsInitialization(sizeOfGameBoard, fieldsNeededForWin);
 		eventsInitialization();
+		
+		gameBoard.setPlayerName(Field.CIRCLE, player1Name);
+		gameBoard.setPlayerName(Field.CROSS, player2Name);
 	}
 	
 	
@@ -41,7 +46,7 @@ public class MainFrame extends JFrame {
 	* Adding event listeners to components
 	*/
 	private void eventsInitialization() {
-		miNewGame.addActionListener((e) -> gameBoardPanel.startNewGame());
+		miNewGame.addActionListener((e) -> gameBoard.startNewGame());
 		miAbout.addActionListener((e) -> {
 			JDialog about = new AboutDialog();
 			about.setVisible(true);
@@ -77,7 +82,7 @@ public class MainFrame extends JFrame {
 		setContentPane(contentPane);
 		
 		lblInformation = new JLabel("Information Label");
-		gameBoardPanel = new GameBoardPanel(lblInformation, sizeOfGameBoard, fieldsNeededForWin);
+		gameBoard = new GameBoardPanel(lblInformation, sizeOfGameBoard, fieldsNeededForWin);
 		
 
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
@@ -86,7 +91,7 @@ public class MainFrame extends JFrame {
 				.addGroup(gl_contentPane.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-						.addComponent(gameBoardPanel, GroupLayout.DEFAULT_SIZE, 404, Short.MAX_VALUE)
+						.addComponent(gameBoard, GroupLayout.DEFAULT_SIZE, 404, Short.MAX_VALUE)
 						.addComponent(lblInformation))
 					.addContainerGap())
 		);
@@ -95,7 +100,7 @@ public class MainFrame extends JFrame {
 				.addGroup(gl_contentPane.createSequentialGroup()
 					.addComponent(lblInformation)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(gameBoardPanel, GroupLayout.DEFAULT_SIZE, 229, Short.MAX_VALUE)
+					.addComponent(gameBoard, GroupLayout.DEFAULT_SIZE, 229, Short.MAX_VALUE)
 					.addContainerGap())
 		);
 		contentPane.setLayout(gl_contentPane);

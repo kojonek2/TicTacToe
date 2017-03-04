@@ -29,6 +29,9 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 	private int fieldsNeededForWin;
 	private boolean gameEnded = false;
 	private Field startedDragAtField = null;
+	
+	private String crossPlayerName;
+	private String circlePlayerName;
 
 	private int playerTurn = Field.BLANK;
 
@@ -46,6 +49,24 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 		
 		createGameBoard(sizeOfBoard);
 		nextTurn();
+	}
+	
+	/**
+	 * Sets player name.
+	 * 
+	 * @param playerFieldStatus pass if player is playing as Field.CIRCLE or Field.CROSS
+	 * @param name player's name
+	 */
+	public void setPlayerName(int playerFieldStatus, String name) {
+		if(playerFieldStatus == Field.CIRCLE) {
+			circlePlayerName = name;
+			return;
+		}
+		if(playerFieldStatus == Field.CROSS) {
+			crossPlayerName = name;
+			return;
+		}
+		System.err.println("GameBoardPnale - setPlayerName: passed wrong playerFieldStatus");
 	}
 
 	public int getSizeOfGameBoard() {
@@ -95,9 +116,9 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 
 	private void updateInfoLabel() {
 		if (playerTurn == Field.CROSS) {
-			SwingUtilities.invokeLater(() -> informationLabel.setText("Cross"));
+			SwingUtilities.invokeLater(() -> informationLabel.setText("Turn: " + crossPlayerName));
 		} else if (playerTurn == Field.CIRCLE) {
-			SwingUtilities.invokeLater(() -> informationLabel.setText("Circle"));
+			SwingUtilities.invokeLater(() -> informationLabel.setText("Turn: " + circlePlayerName));
 		} else {
 			SwingUtilities.invokeLater(() -> informationLabel.setText("Error"));
 		}
@@ -241,14 +262,26 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 		int winner = checkForWinner();
 		if (!(winner == Field.BLANK)) {
 			// game ended announce winner
-			JDialog dialog = new WinnerAnnouncer(this, winner);
-			dialog.setVisible(true);
-			gameEnded = true;
+			announceWinner(winner);
 			return;
 		}
 
 		// start next turn
 		nextTurn();
+	}
+	
+	private void announceWinner(int winner) {
+		String winnerName = "";
+		if(winner == Field.CROSS) {
+			winnerName = crossPlayerName;
+		} else if(winner == Field.CIRCLE) {
+			winnerName = crossPlayerName;
+		} else {
+			System.err.println("GameBoradPanel - announceWinner: invalid Winner");
+		}
+		JDialog dialog = new WinnerAnnouncer(this, winnerName);
+		dialog.setVisible(true);
+		gameEnded = true;
 	}
 
 	@Override

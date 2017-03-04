@@ -12,8 +12,6 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
-import kojonek2.tictactoe.common.Field;
-
 @SuppressWarnings("serial")
 public class WinnerAnnouncer extends JDialog {
 
@@ -26,7 +24,7 @@ public class WinnerAnnouncer extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public WinnerAnnouncer(GameBoardPanel gameBoard, int winner) {
+	public WinnerAnnouncer(GameBoardPanel gameBoard, String winnerName) {
 		setTitle("Tic Tac Toe - Game Ended");
 		this.gameBoard = gameBoard;
 		
@@ -37,17 +35,11 @@ public class WinnerAnnouncer extends JDialog {
 		eventsInitialization();
 		
 		//make changes after initializing components
-		setInfoLabel(winner);
+		setInfoLabel(winnerName);
 	}
 	
-	private void setInfoLabel(int winner) {
-		if(winner == Field.CROSS) {
-			lblInfo.setText("Cross has won!");
-		} else if (winner == Field.CIRCLE) {
-			lblInfo.setText("Circle has won!");
-		} else {
-			System.err.println("WinnerAnnouncer - no winner");
-		}
+	private void setInfoLabel(String winnerName) {
+		lblInfo.setText(winnerName + " has won!");
 	}
 	
 	/**
