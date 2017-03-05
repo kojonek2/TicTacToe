@@ -26,6 +26,7 @@ public class MainFrame extends JFrame {
 	private GameBoardPanel gameBoard;
 	private JMenu mnHelp;
 	private JMenuItem miAbout;
+	private JMenuItem miToWelcomeFrame;
 
 	/**
 	 * Create the frame.
@@ -47,6 +48,11 @@ public class MainFrame extends JFrame {
 	*/
 	private void eventsInitialization() {
 		miNewGame.addActionListener((e) -> gameBoard.startNewGame());
+		miToWelcomeFrame.addActionListener((e) -> {
+			JFrame welcome = new WelcomeFrame();
+			welcome.setVisible(true);
+			dispose();
+		});
 		miAbout.addActionListener((e) -> {
 			JDialog about = new AboutDialog();
 			about.setVisible(true);
@@ -70,6 +76,9 @@ public class MainFrame extends JFrame {
 		
 		miNewGame = new JMenuItem("New Game");
 		mnGame.add(miNewGame);
+		
+		miToWelcomeFrame = new JMenuItem("Return to Welcome Screen");
+		mnGame.add(miToWelcomeFrame);
 		
 		mnHelp = new JMenu("Help");
 		menuBar.add(mnHelp);

@@ -35,11 +35,15 @@ public class WinnerAnnouncer extends JDialog {
 		eventsInitialization();
 		
 		//make changes after initializing components
-		setInfoLabel(winnerName);
+		if(winnerName != null) {
+			setInfoLabel(winnerName + " has won!");
+		} else {
+			setInfoLabel("Draw!");
+		}
 	}
 	
-	private void setInfoLabel(String winnerName) {
-		lblInfo.setText(winnerName + " has won!");
+	private void setInfoLabel(String text) {
+		lblInfo.setText(text);
 	}
 	
 	/**

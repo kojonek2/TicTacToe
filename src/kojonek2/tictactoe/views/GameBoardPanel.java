@@ -29,7 +29,7 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 	private int fieldsNeededForWin;
 	private boolean gameEnded = false;
 	private Field startedDragAtField = null;
-	
+
 	private String crossPlayerName;
 	private String circlePlayerName;
 
@@ -42,27 +42,29 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 		super();
 		addComponentListener(this);
 		addMouseListener(this);
-		
+
 		this.sizeOfGameBoard = sizeOfBoard;
 		this.fieldsNeededForWin = fieldsNeededForWin;
 		this.informationLabel = jLabel;
-		
+
 		createGameBoard(sizeOfBoard);
 		nextTurn();
 	}
-	
+
 	/**
 	 * Sets player name.
 	 * 
-	 * @param playerFieldStatus pass if player is playing as Field.CIRCLE or Field.CROSS
-	 * @param name player's name
+	 * @param playerFieldStatus
+	 *            pass if player is playing as Field.CIRCLE or Field.CROSS
+	 * @param name
+	 *            player's name
 	 */
 	public void setPlayerName(int playerFieldStatus, String name) {
-		if(playerFieldStatus == Field.CIRCLE) {
+		if (playerFieldStatus == Field.CIRCLE) {
 			circlePlayerName = name;
 			return;
 		}
-		if(playerFieldStatus == Field.CROSS) {
+		if (playerFieldStatus == Field.CROSS) {
 			crossPlayerName = name;
 			return;
 		}
@@ -128,11 +130,21 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		Graphics2D g2d = (Graphics2D) g;
+		
+		
+		//this is there because window builder showed divided by 0 error
+		/////////////////////////////////////////////////////////////////////////////////
+		int divisor = sizeOfGameBoard;
+		if(sizeOfGameBoard == 0) {
+			divisor = 3;
+			System.err.println("GameBoardPanel - paintComponent: this is only for window builder purpose");
+		}
+		////////////////////////////////////////////////////////////////////////////////////
 
 		if (width > height) {
-			Field.lengthOfSide = height / sizeOfGameBoard;
+			Field.lengthOfSide = height / divisor;
 		} else {
-			Field.lengthOfSide = width / sizeOfGameBoard;
+			Field.lengthOfSide = width / divisor;
 		}
 
 		for (int i = 0; i < sizeOfGameBoard; i++) {
@@ -265,17 +277,23 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 			announceWinner(winner);
 			return;
 		}
+		if (getNumberOfBlankField() <= 0) {
+			announceWinner(Field.DRAW);
+			return;
+		}
 
 		// start next turn
 		nextTurn();
 	}
-	
+
 	private void announceWinner(int winner) {
 		String winnerName = "";
-		if(winner == Field.CROSS) {
+		if (winner == Field.CROSS) {
 			winnerName = crossPlayerName;
-		} else if(winner == Field.CIRCLE) {
+		} else if (winner == Field.CIRCLE) {
 			winnerName = crossPlayerName;
+		} else if (winner == Field.DRAW) {
+			winnerName = null;
 		} else {
 			System.err.println("GameBoradPanel - announceWinner: invalid Winner");
 		}
@@ -284,13 +302,25 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 		gameEnded = true;
 	}
 
+	private int getNumberOfBlankField() {
+		int result = 0;
+		for (Field[] array : gameBoard) {
+			for (Field field : array) {
+				if (field.getState() == Field.BLANK) {
+					result++;
+				}
+			}
+		}
+		return result;
+	}
+
 	@Override
 	public void componentResized(ComponentEvent e) {
 		width = (int) getSize().getWidth();
 		height = (int) getSize().getHeight();
 		repaint();
 	}
-	
+
 	@Override
 	public void mousePressed(MouseEvent e) {
 		if (gameEnded) {
@@ -307,27 +337,27 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 
 		startedDragAtField = gameBoard[xOfInteractedField][yOfInteracteddField];
 	}
-	
+
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		if(startedDragAtField == null) {
+		if (startedDragAtField == null) {
 			return;
 		}
-		
+
 		int xOfInteractedField = e.getX() / Field.lengthOfSide;
 		int yOfInteractedField = e.getY() / Field.lengthOfSide;
-		
+
 		// Check if it was clicked at game board
 		if (xOfInteractedField > sizeOfGameBoard - 1 || yOfInteractedField > sizeOfGameBoard - 1) {
 			startedDragAtField = null;
 			return;
 		}
-		
-		if(gameBoard[xOfInteractedField][yOfInteractedField] == startedDragAtField) {
+
+		if (gameBoard[xOfInteractedField][yOfInteractedField] == startedDragAtField) {
 			fieldClicked(startedDragAtField);
 			return;
 		}
-		
+
 		startedDragAtField = null;
 	}
 
