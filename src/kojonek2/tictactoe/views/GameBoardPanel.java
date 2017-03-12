@@ -16,6 +16,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import kojonek2.tictactoe.common.Field;
 
 @SuppressWarnings("serial")
@@ -23,7 +27,7 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 
 	private JLabel informationLabel;
 
-	private final int sizeOfGameBoard;
+	private int sizeOfGameBoard;
 	private Field[][] gameBoard;
 	private int width, height;
 	private int fieldsNeededForWin;
@@ -122,7 +126,7 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 			playerTurn = ThreadLocalRandom.current().nextInt(1, 3);
 		}
 
-		updateInfoLabel();
+		updateInformationLabel();
 	}
 
 	private void createGameBoard(int sizeOfGameBoard) {
@@ -134,7 +138,7 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 		}
 	}
 
-	private void updateInfoLabel() {
+	private void updateInformationLabel() {
 		if (playerTurn == Field.CROSS) {
 			SwingUtilities.invokeLater(() -> informationLabel.setText("Turn: " + crossPlayerName));
 		} else if (playerTurn == Field.CIRCLE) {
@@ -330,6 +334,78 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 			}
 		}
 		return result;
+	}
+	
+	public String saveGame() throws JSONException {
+		JSONObject root = new JSONObject();
+			
+		saveGeneralInformations(root);
+		saveFields(root);
+		
+		return root.toString();
+	}
+	
+	private void saveGeneralInformations(JSONObject root) throws JSONException {
+			root.put("sizeOfGameBoard", sizeOfGameBoard);
+			root.put("fieldsNeededForWin", fieldsNeededForWin);
+			root.put("crossPlayerName", crossPlayerName);
+			root.put("circlePlayerName", circlePlayerName);
+			root.put("randomPlayerSwaps", randomPlayerSwaps);
+			root.put("playerTurn", playerTurn);
+	}
+	
+	private void saveFields(JSONObject root) throws JSONException {
+		JSONArray array = new JSONArray();
+		
+		for(int x = 0; x < sizeOfGameBoard; x++) {
+			for(int y = 0; y < sizeOfGameBoard; y++) {
+				Field field = gameBoard[x][y];
+				
+				JSONObject jsonFieldData = new JSONObject();
+				jsonFieldData.put("state", field.getState());
+				jsonFieldData.put("x", x);
+				jsonFieldData.put("y", y);
+				
+				array.put(jsonFieldData);
+			}
+		}
+		
+		root.put("fields", array);
+	}
+	
+	public void loadGame(String jsonText) throws JSONException {
+		JSONObject root = new JSONObject(jsonText);
+		
+		loadGeneralInformations(root);
+		loadFields(root);
+		
+		updateInformationLabel();
+		repaint();
+	}
+	
+	private void loadGeneralInformations(JSONObject root) throws JSONException {
+		sizeOfGameBoard = root.getInt("sizeOfGameBoard");
+		fieldsNeededForWin = root.getInt("fieldsNeededForWin");
+		crossPlayerName = root.getString("crossPlayerName");
+		circlePlayerName = root.getString("circlePlayerName");
+		randomPlayerSwaps = root.getBoolean("randomPlayerSwaps");
+		playerTurn = root.getInt("playerTurn");
+		
+		createGameBoard(sizeOfGameBoard);
+	}
+	
+	private void loadFields(JSONObject root) throws JSONException {
+		JSONArray array = root.getJSONArray("fields");
+		
+		for(int i = 0; i < array.length(); i++) {
+			JSONObject field = array.getJSONObject(i);
+			
+			int x = field.getInt("x");
+			int y = field.getInt("y");
+			int state = field.getInt("state");
+			
+			gameBoard[x][y].setState(state);
+		}
 	}
 
 	@Override

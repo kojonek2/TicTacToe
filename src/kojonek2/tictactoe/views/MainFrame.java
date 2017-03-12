@@ -2,6 +2,11 @@ package kojonek2.tictactoe.views;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Scanner;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -11,9 +16,12 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.EmptyBorder;
+
+import org.json.JSONException;
 
 import kojonek2.tictactoe.common.Field;
 
@@ -27,6 +35,8 @@ public class MainFrame extends JFrame {
 	private JMenu mnHelp;
 	private JMenuItem miAbout;
 	private JMenuItem miToWelcomeFrame;
+	private JMenuItem miSaveGame;
+	private JMenuItem miLoadGame;
 
 	/**
 	 * Create the frame.
@@ -63,15 +73,73 @@ public class MainFrame extends JFrame {
 	*/
 	private void eventsInitialization() {
 		miNewGame.addActionListener((e) -> gameBoard.startNewGame());
+		
 		miToWelcomeFrame.addActionListener((e) -> {
 			JFrame welcome = new WelcomeFrame();
 			welcome.setVisible(true);
 			dispose();
 		});
+		
 		miAbout.addActionListener((e) -> {
 			JDialog about = new AboutDialog();
 			about.setVisible(true);
 		});
+		
+		miSaveGame.addActionListener((e) -> saveGame());
+		miLoadGame.addActionListener((e) -> loadGame());
+	}
+	
+	private void saveGame() {
+		try {
+			String save =  gameBoard.saveGame();
+			FileWriter writer = new FileWriter("C:\\Users\\Admin\\Desktop\\saveAdam_tic_tac_toe.txt");
+			writer.write(save);
+			writer.close();
+
+		} catch (JSONException e) {
+			e.printStackTrace();
+			Toolkit.getDefaultToolkit().beep();
+			JOptionPane.showMessageDialog(this, "Error occured during saving game!!", "Saving error", JOptionPane.ERROR_MESSAGE);
+			System.exit(ERROR);
+		} catch (IOException e) {
+			e.printStackTrace();
+			Toolkit.getDefaultToolkit().beep();
+			JOptionPane.showMessageDialog(this, "Error occured during saving game!!", "Saving error", JOptionPane.ERROR_MESSAGE);
+			System.exit(ERROR);
+		}
+	}
+	
+	private void loadGame() {
+		try {
+			String save = "";
+			
+			File file = new File("C:\\Users\\Admin\\Desktop\\saveAdam_tic_tac_toe.txt");
+			Scanner scanner = new Scanner(file);
+			scanner.useDelimiter("\\A");
+			
+			if(scanner.hasNext()) {
+				save = scanner.next();
+				scanner.close();
+			} else {
+				scanner.close();
+				Toolkit.getDefaultToolkit().beep();
+				JOptionPane.showMessageDialog(this, "Corruped or blank save.", "Loading error", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+			
+			gameBoard.loadGame(save);
+			
+		} catch (JSONException e) {
+			e.printStackTrace();
+			Toolkit.getDefaultToolkit().beep();
+			JOptionPane.showMessageDialog(this, "Error occured during loading save!!", "Loading error", JOptionPane.ERROR_MESSAGE);
+			System.exit(ERROR);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			Toolkit.getDefaultToolkit().beep();
+			JOptionPane.showMessageDialog(this, "Save file not found!!", "Saving error", JOptionPane.ERROR_MESSAGE);
+			System.exit(ERROR);
+		}
 	}
 	
 	/**
@@ -91,6 +159,12 @@ public class MainFrame extends JFrame {
 		
 		miNewGame = new JMenuItem("New Game");
 		mnGame.add(miNewGame);
+		
+		miSaveGame = new JMenuItem("Save Game");
+		mnGame.add(miSaveGame);
+		
+		miLoadGame = new JMenuItem("Load Game");
+		mnGame.add(miLoadGame);
 		
 		miToWelcomeFrame = new JMenuItem("Return to Welcome Screen");
 		mnGame.add(miToWelcomeFrame);
