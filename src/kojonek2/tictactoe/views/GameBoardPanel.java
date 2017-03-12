@@ -35,7 +35,7 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 	private boolean randomPlayerSwaps = false;
 
 	private int playerTurn = Field.BLANK;
-
+	
 	/**
 	 * Create game Board
 	 */
