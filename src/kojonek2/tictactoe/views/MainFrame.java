@@ -31,17 +31,32 @@ public class MainFrame extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public MainFrame(int sizeOfGameBoard, int fieldsNeededForWin, String player1Name, String player2Name) {
+	public MainFrame(int sizeOfGameBoard, int fieldsNeededForWin, String circlePlayerName, String crossPlayerName) {
 		setTitle("Tic Tac Toe");
 
 		//initializing components and adding events listeners
 		componentsInitialization(sizeOfGameBoard, fieldsNeededForWin);
 		eventsInitialization();
 		
-		gameBoard.setPlayerName(Field.CIRCLE, player1Name);
-		gameBoard.setPlayerName(Field.CROSS, player2Name);
+		if(circlePlayerName != null && crossPlayerName != null) {
+			gameBoard.setPlayerName(Field.CIRCLE, circlePlayerName);
+			gameBoard.setPlayerName(Field.CROSS, crossPlayerName);
+		} else if(circlePlayerName == null && crossPlayerName == null) {
+			gameBoard.setPlayerName(Field.CIRCLE, "Circle");
+			gameBoard.setPlayerName(Field.CROSS, "Cross");
+		} else {
+			System.err.println("MainFrame - Constructor: player1Name and player2Name must be both null or both set");
+		}
+		
 	}
 	
+	public void startGame() {
+		gameBoard.startNewGame();
+	}
+	
+	public void randomlySwapPlayers(boolean b) {
+		gameBoard.setRandomPlayerSwaps(b);
+	}
 	
 	/**
 	* Adding event listeners to components

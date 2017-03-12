@@ -33,10 +33,10 @@ public class WelcomeFrame extends JFrame {
 	private JTextField txtPlayer2Name;
 	private JRadioButton rbCirclePlayer1;
 	private JRadioButton rbCrossPlayer1;
-	private JRadioButton rbRandom1;
+	private JRadioButton rbRandomPlayer1;
 	private JRadioButton rbCirclePlayer2;
 	private JRadioButton rbCrossPlayer2;
-	private JRadioButton rbRandom2;
+	private JRadioButton rbRandomPlayer2;
 	private final ButtonGroup player1ButtonGroup = new ButtonGroup();
 	private final ButtonGroup player2ButtonGroup = new ButtonGroup();
 	private JCheckBox chboxNoNames;
@@ -74,16 +74,41 @@ public class WelcomeFrame extends JFrame {
 
 	private void startGame() {
 		//TODO add possibility to play without nicknames
-		if(!areInputsValid()) {
+		if(!areInputsValid() && !chboxNoNames.isSelected()) {
 			Toolkit.getDefaultToolkit().beep();
 			JOptionPane.showMessageDialog(this, "Inputs can't be blank.");
 			return;
 		}
 		
-		MainFrame mainFrame = new MainFrame((int) spnGameBoardSize.getValue(), (int) spnFieldNeededForWin.getValue(),
-				txtPlayer1Name.getText(), txtPlayer2Name.getText());
+		MainFrame mainFrame;
+		if(chboxNoNames.isSelected()) {
+			mainFrame = new MainFrame((int) spnGameBoardSize.getValue(), (int) spnFieldNeededForWin.getValue(),
+					null, null);
+		} else {
+			mainFrame = createMainFrameWithNames();
+		}
+		mainFrame.startGame();
 		mainFrame.setVisible(true);
 		dispose();
+	}
+	
+	private MainFrame createMainFrameWithNames() {
+		if(rbCirclePlayer1.isSelected() && rbCrossPlayer2.isSelected()) {
+			return new MainFrame((int) spnGameBoardSize.getValue(), (int) spnFieldNeededForWin.getValue(),
+					txtPlayer1Name.getText(), txtPlayer2Name.getText());
+		}
+		if (rbCrossPlayer1.isSelected() && rbCirclePlayer2.isSelected()) {
+			return new MainFrame((int) spnGameBoardSize.getValue(), (int) spnFieldNeededForWin.getValue(),
+					txtPlayer2Name.getText(), txtPlayer1Name.getText());
+		}
+		if(rbRandomPlayer1.isSelected() && rbRandomPlayer2.isSelected()) {
+			MainFrame mainFrame = new MainFrame((int) spnGameBoardSize.getValue(), (int) spnFieldNeededForWin.getValue(),
+					txtPlayer2Name.getText(), txtPlayer1Name.getText());
+			mainFrame.randomlySwapPlayers(true);
+			return mainFrame;
+		}
+		System.err.println("WelcomeFrame - createMainFrameWithNames: Error bad configuration of checkboxes detected");
+		return null;
 	}
 	
 	private boolean areInputsValid() {
@@ -96,9 +121,21 @@ public class WelcomeFrame extends JFrame {
 		if(chboxNoNames.isSelected()) {
 			txtPlayer1Name.setEnabled(false);
 			txtPlayer2Name.setEnabled(false);
+			rbCirclePlayer1.setEnabled(false);
+			rbCrossPlayer1.setEnabled(false);
+			rbRandomPlayer1.setEnabled(false);
+			rbCirclePlayer2.setEnabled(false);
+			rbCrossPlayer2.setEnabled(false);
+			rbRandomPlayer2.setEnabled(false);
 		} else {
 			txtPlayer1Name.setEnabled(true);
 			txtPlayer2Name.setEnabled(true);
+			rbCirclePlayer1.setEnabled(true);
+			rbCrossPlayer1.setEnabled(true);
+			rbRandomPlayer1.setEnabled(true);
+			rbCirclePlayer2.setEnabled(true);
+			rbCrossPlayer2.setEnabled(true);
+			rbRandomPlayer2.setEnabled(true);
 		}
 	}
 	
@@ -110,11 +147,11 @@ public class WelcomeFrame extends JFrame {
 		
 		rbCirclePlayer1.addActionListener((e) -> rbCrossPlayer2.setSelected(true));
 		rbCrossPlayer1.addActionListener((e) -> rbCirclePlayer2.setSelected(true));
-		rbRandom1.addActionListener((e) -> rbRandom2.setSelected(true));
+		rbRandomPlayer1.addActionListener((e) -> rbRandomPlayer2.setSelected(true));
 		
 		rbCirclePlayer2.addActionListener((e) -> rbCrossPlayer1.setSelected(true));
 		rbCrossPlayer2.addActionListener((e) -> rbCirclePlayer1.setSelected(true));
-		rbRandom2.addActionListener((e) -> rbRandom1.setSelected(true));
+		rbRandomPlayer2.addActionListener((e) -> rbRandomPlayer1.setSelected(true));
 		
 		chboxNoNames.addActionListener((e) -> checkBoxClicked());
 	}
@@ -171,9 +208,9 @@ public class WelcomeFrame extends JFrame {
 		rbCrossPlayer1 = new JRadioButton("Cross");
 		player1ButtonGroup.add(rbCrossPlayer1);
 		
-		rbRandom1 = new JRadioButton("Random");
-		player1ButtonGroup.add(rbRandom1);
-		rbRandom1.setSelected(true);
+		rbRandomPlayer1 = new JRadioButton("Random");
+		player1ButtonGroup.add(rbRandomPlayer1);
+		rbRandomPlayer1.setSelected(true);
 		
 		
 		rbCirclePlayer2 = new JRadioButton("Circle");
@@ -182,9 +219,9 @@ public class WelcomeFrame extends JFrame {
 		rbCrossPlayer2 = new JRadioButton("Cross");
 		player2ButtonGroup.add(rbCrossPlayer2);
 		
-		rbRandom2 = new JRadioButton("Random");
-		player2ButtonGroup.add(rbRandom2);
-		rbRandom2.setSelected(true);
+		rbRandomPlayer2 = new JRadioButton("Random");
+		player2ButtonGroup.add(rbRandomPlayer2);
+		rbRandomPlayer2.setSelected(true);
 		
 		chboxNoNames = new JCheckBox("Play without nicknames");
 		
@@ -217,7 +254,7 @@ public class WelcomeFrame extends JFrame {
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(rbCrossPlayer1)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(rbRandom1)))
+							.addComponent(rbRandomPlayer1)))
 					.addContainerGap(120, Short.MAX_VALUE))
 				.addGroup(gl_contentPane.createSequentialGroup()
 					.addContainerGap()
@@ -229,7 +266,7 @@ public class WelcomeFrame extends JFrame {
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(rbCrossPlayer2)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(rbRandom2)
+					.addComponent(rbRandomPlayer2)
 					.addContainerGap(120, Short.MAX_VALUE))
 				.addGroup(gl_contentPane.createSequentialGroup()
 					.addContainerGap()
@@ -260,14 +297,14 @@ public class WelcomeFrame extends JFrame {
 						.addComponent(txtPlayer1Name, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(rbCirclePlayer1)
 						.addComponent(rbCrossPlayer1)
-						.addComponent(rbRandom1))
+						.addComponent(rbRandomPlayer1))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
 						.addComponent(txtPlayer2Name, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(lblPlayer2Name)
 						.addComponent(rbCirclePlayer2)
 						.addComponent(rbCrossPlayer2)
-						.addComponent(rbRandom2))
+						.addComponent(rbRandomPlayer2))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(chboxNoNames)
 					.addPreferredGap(ComponentPlacement.RELATED)

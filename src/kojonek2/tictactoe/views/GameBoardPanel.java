@@ -32,6 +32,7 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 
 	private String crossPlayerName;
 	private String circlePlayerName;
+	private boolean randomPlayerSwaps = false;
 
 	private int playerTurn = Field.BLANK;
 
@@ -48,7 +49,10 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 		this.informationLabel = jLabel;
 
 		createGameBoard(sizeOfBoard);
-		nextTurn();
+	}
+	
+	public void setRandomPlayerSwaps(boolean b) {
+		randomPlayerSwaps = b;
 	}
 
 	/**
@@ -70,6 +74,14 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 		}
 		System.err.println("GameBoardPnale - setPlayerName: passed wrong playerFieldStatus");
 	}
+	
+	public void swapPlayers() {
+		if(crossPlayerName != null && circlePlayerName != null) {
+			String temp = crossPlayerName;
+			crossPlayerName = circlePlayerName;
+			circlePlayerName = temp;
+		}
+	}
 
 	public int getSizeOfGameBoard() {
 		return sizeOfGameBoard;
@@ -88,6 +100,12 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 		}
 		playerTurn = Field.BLANK;
 
+		if(randomPlayerSwaps) {
+			if(ThreadLocalRandom.current().nextInt(2) == 0) {
+				swapPlayers();
+			}
+		}
+		
 		// it needs to be done like that. Doesn't work in other way. Probably
 		// because this is called from WinnerAnnouncer
 		EventQueue.invokeLater(() -> gameEnded = false);
