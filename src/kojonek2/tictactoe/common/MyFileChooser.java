@@ -1,5 +1,6 @@
 package kojonek2.tictactoe.common;
 
+import java.awt.Toolkit;
 import java.io.File;
 
 import javax.swing.JFileChooser;
@@ -25,18 +26,22 @@ public class MyFileChooser extends JFileChooser {
 		String extension = getExtension(file);
 		if(extension == null) {
 			String path = file.getAbsolutePath();
-			System.out.println(path);
 			setSelectedFile(new File(path + ".json"));
-			//TODO
+		} else if(!extension.equals("json")) {
+			Toolkit.getDefaultToolkit().beep();
+			JOptionPane.showMessageDialog(this, "You need to choose file with extension .json", "Warning", JOptionPane.WARNING_MESSAGE);
+			return;
 		}
 
 		file = getSelectedFile();
 		if(file.exists()) {
 			int resultCode = JOptionPane.showConfirmDialog(this, "Would you like to override this file?");
-			if(resultCode == JOptionPane.YES_OPTION) {
-				super.approveSelection();
+			if(resultCode != JOptionPane.YES_OPTION) {
+				return;
 			}
 		}
+		
+		super.approveSelection();
 	}
 	
 	private void openDialogApprove() {
@@ -44,10 +49,9 @@ public class MyFileChooser extends JFileChooser {
 	}
 	
 	private String getExtension(File file) {
-		String[] splitedName = file.getName().split(".");
+		String[] splitedName = file.getName().split("\\.");
 		if(splitedName.length > 1) {
-			String extension = splitedName[splitedName.length - 1];
-			return extension;
+			return splitedName[splitedName.length - 1];
 		}
 		return null;
 	}
