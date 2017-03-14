@@ -11,6 +11,7 @@ import java.util.Scanner;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -20,13 +21,18 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.EmptyBorder;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.json.JSONException;
 
 import kojonek2.tictactoe.common.Field;
+import kojonek2.tictactoe.common.MyFileChooser;
 
 @SuppressWarnings("serial")
 public class MainFrame extends JFrame {
+	
+	private JFileChooser fileChooser;
 
 	private JPanel contentPane;
 	private JLabel lblInformation;
@@ -89,10 +95,31 @@ public class MainFrame extends JFrame {
 		miLoadGame.addActionListener((e) -> loadGame());
 	}
 	
+	/**
+	 * Creates fileChooser if there isn't one
+	 */
+	private void createFileChooser() {
+		if(fileChooser == null) {
+			fileChooser = new MyFileChooser();
+			FileFilter filter = new FileNameExtensionFilter("Load only .json files", "json");
+			fileChooser.setFileFilter(filter);
+			
+			File workingDirectory = new File(System.getProperty("user.dir"));
+			fileChooser.setCurrentDirectory(workingDirectory);
+			fileChooser.setSelectedFile(new File("save.json"));
+		}
+	}
+	
 	private void saveGame() {
 		try {
 			String save =  gameBoard.saveGame();
-			FileWriter writer = new FileWriter("C:\\Users\\Admin\\Desktop\\saveAdam_tic_tac_toe.txt");
+			
+			File file = askForFileToWrite();
+			if(file == null) {
+				return;
+			}
+			
+			FileWriter writer = new FileWriter(file);
 			writer.write(save);
 			writer.close();
 
@@ -100,20 +127,31 @@ public class MainFrame extends JFrame {
 			e.printStackTrace();
 			Toolkit.getDefaultToolkit().beep();
 			JOptionPane.showMessageDialog(this, "Error occured during saving game!!", "Saving error", JOptionPane.ERROR_MESSAGE);
-			System.exit(ERROR);
 		} catch (IOException e) {
 			e.printStackTrace();
 			Toolkit.getDefaultToolkit().beep();
 			JOptionPane.showMessageDialog(this, "Error occured during saving game!!", "Saving error", JOptionPane.ERROR_MESSAGE);
-			System.exit(ERROR);
 		}
+	}
+	
+	private File askForFileToWrite() {
+		createFileChooser();
+		int resultCode = fileChooser.showSaveDialog(this);
+		if(resultCode == JFileChooser.APPROVE_OPTION) {
+			return fileChooser.getSelectedFile();
+		}
+		return null;
 	}
 	
 	private void loadGame() {
 		try {
 			String save = "";
 			
-			File file = new File("C:\\Users\\Admin\\Desktop\\saveAdam_tic_tac_toe.txt");
+			File file = askForFileToLoad();
+			if(file == null) {
+				return;
+			}
+			
 			Scanner scanner = new Scanner(file);
 			scanner.useDelimiter("\\A");
 			
@@ -133,13 +171,20 @@ public class MainFrame extends JFrame {
 			e.printStackTrace();
 			Toolkit.getDefaultToolkit().beep();
 			JOptionPane.showMessageDialog(this, "Error occured during loading save!!", "Loading error", JOptionPane.ERROR_MESSAGE);
-			System.exit(ERROR);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			Toolkit.getDefaultToolkit().beep();
 			JOptionPane.showMessageDialog(this, "Save file not found!!", "Saving error", JOptionPane.ERROR_MESSAGE);
-			System.exit(ERROR);
 		}
+	}
+	
+	private File askForFileToLoad() {
+		createFileChooser();
+		int resultCode = fileChooser.showOpenDialog(this);
+		if(resultCode == JFileChooser.APPROVE_OPTION) {
+			return fileChooser.getSelectedFile();
+		}
+		return null;
 	}
 	
 	/**
