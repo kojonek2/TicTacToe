@@ -35,60 +35,58 @@ public class AboutDialog extends JDialog {
 
 		componentsInitialization();
 		eventsInitialization();
-		
+
 		setTextForAbout();
 	}
-	
+
 	private void setTextForAbout() {
-		InputStream stream = this.getClass().getClassLoader().getResourceAsStream("kojonek2/tictactoe/resources/About.txt");
-		if(stream == null) {
+		InputStream stream = this.getClass().getClassLoader()
+				.getResourceAsStream("kojonek2/tictactoe/resources/About.txt");
+		if (stream == null) {
 			System.err.println("AboutDialog -- stream for text file not found");
 			return;
-		}	
+		}
 		Scanner scanner = new Scanner(stream);
-		
-		//setting delimiter to a "beginning of the input boundary" so scanner.next() reads all file
+
+		// setting delimiter to a "beginning of the input boundary" so
+		// scanner.next() reads all file
 		scanner.useDelimiter("\\A");
-		
-		if(scanner.hasNext()) {
+
+		if (scanner.hasNext()) {
 			txtAbout.setText(scanner.next());
 		}
-		
+
 		scanner.close();
 	}
-		
+
 	/**
-	* Adding event listeners to components
-	*/
+	 * Adding event listeners to components
+	 */
 	private void eventsInitialization() {
 		btnOk.addActionListener((e) -> dispose());
 	}
-	
+
 	/**
-	* Initializing components generated via Window Builder
-	*/
+	 * Initializing components generated via Window Builder
+	 */
 	private void componentsInitialization() {
-		setMinimumSize(new Dimension(200,100));
-		setIconImage(Toolkit.getDefaultToolkit().getImage(WinnerAnnouncer.class.getResource("/kojonek2/tictactoe/resources/tic-tac-toe_16.png")));
+		setMinimumSize(new Dimension(200, 100));
+		setIconImage(Toolkit.getDefaultToolkit()
+				.getImage(WinnerAnnouncer.class.getResource("/kojonek2/tictactoe/resources/tic-tac-toe_16.png")));
 		setBounds(100, 100, 800, 500);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
-		
+
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBorder(null);
 		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
 		gl_contentPanel.setHorizontalGroup(
-			gl_contentPanel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_contentPanel.createSequentialGroup()
-					.addGap(2)
-					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 422, Short.MAX_VALUE))
-		);
-		gl_contentPanel.setVerticalGroup(
-			gl_contentPanel.createParallelGroup(Alignment.LEADING)
-				.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 218, Short.MAX_VALUE)
-		);
-		
+				gl_contentPanel.createParallelGroup(Alignment.LEADING).addGroup(gl_contentPanel.createSequentialGroup()
+						.addGap(2).addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 422, Short.MAX_VALUE)));
+		gl_contentPanel.setVerticalGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING).addComponent(scrollPane,
+				GroupLayout.DEFAULT_SIZE, 218, Short.MAX_VALUE));
+
 		txtAbout = new JTextArea();
 		txtAbout.setFont(new Font("Monospaced", Font.PLAIN, 12));
 		txtAbout.setCaretColor(UIManager.getColor("Button.background"));

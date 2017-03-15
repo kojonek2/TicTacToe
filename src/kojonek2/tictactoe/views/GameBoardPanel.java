@@ -39,7 +39,7 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 	private boolean randomPlayerSwaps = false;
 
 	private int playerTurn = Field.BLANK;
-	
+
 	/**
 	 * Create game Board
 	 */
@@ -54,7 +54,7 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 
 		createGameBoard(sizeOfBoard);
 	}
-	
+
 	public void setRandomPlayerSwaps(boolean b) {
 		randomPlayerSwaps = b;
 	}
@@ -78,9 +78,9 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 		}
 		System.err.println("GameBoardPnale - setPlayerName: passed wrong playerFieldStatus");
 	}
-	
+
 	public void swapPlayers() {
-		if(crossPlayerName != null && circlePlayerName != null) {
+		if (crossPlayerName != null && circlePlayerName != null) {
 			String temp = crossPlayerName;
 			crossPlayerName = circlePlayerName;
 			circlePlayerName = temp;
@@ -104,12 +104,12 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 		}
 		playerTurn = Field.BLANK;
 
-		if(randomPlayerSwaps) {
-			if(ThreadLocalRandom.current().nextInt(2) == 0) {
+		if (randomPlayerSwaps) {
+			if (ThreadLocalRandom.current().nextInt(2) == 0) {
 				swapPlayers();
 			}
 		}
-		
+
 		// it needs to be done like that. Doesn't work in other way. Probably
 		// because this is called from WinnerAnnouncer
 		EventQueue.invokeLater(() -> gameEnded = false);
@@ -152,12 +152,11 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		Graphics2D g2d = (Graphics2D) g;
-		
-		
-		//this is there because window builder showed divided by 0 error
+
+		// this is there because window builder showed divided by 0 error
 		/////////////////////////////////////////////////////////////////////////////////
 		int divisor = sizeOfGameBoard;
-		if(sizeOfGameBoard == 0) {
+		if (sizeOfGameBoard == 0) {
 			divisor = 3;
 			System.err.println("GameBoardPanel - paintComponent: this is only for window builder purpose");
 		}
@@ -335,54 +334,54 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 		}
 		return result;
 	}
-	
+
 	public String saveGame() throws JSONException {
 		JSONObject root = new JSONObject();
-			
+
 		saveGeneralInformations(root);
 		saveFields(root);
-		
+
 		return root.toString();
 	}
-	
+
 	private void saveGeneralInformations(JSONObject root) throws JSONException {
-			root.put("sizeOfGameBoard", sizeOfGameBoard);
-			root.put("fieldsNeededForWin", fieldsNeededForWin);
-			root.put("crossPlayerName", crossPlayerName);
-			root.put("circlePlayerName", circlePlayerName);
-			root.put("randomPlayerSwaps", randomPlayerSwaps);
-			root.put("playerTurn", playerTurn);
+		root.put("sizeOfGameBoard", sizeOfGameBoard);
+		root.put("fieldsNeededForWin", fieldsNeededForWin);
+		root.put("crossPlayerName", crossPlayerName);
+		root.put("circlePlayerName", circlePlayerName);
+		root.put("randomPlayerSwaps", randomPlayerSwaps);
+		root.put("playerTurn", playerTurn);
 	}
-	
+
 	private void saveFields(JSONObject root) throws JSONException {
 		JSONArray array = new JSONArray();
-		
-		for(int x = 0; x < sizeOfGameBoard; x++) {
-			for(int y = 0; y < sizeOfGameBoard; y++) {
+
+		for (int x = 0; x < sizeOfGameBoard; x++) {
+			for (int y = 0; y < sizeOfGameBoard; y++) {
 				Field field = gameBoard[x][y];
-				
+
 				JSONObject jsonFieldData = new JSONObject();
 				jsonFieldData.put("state", field.getState());
 				jsonFieldData.put("x", x);
 				jsonFieldData.put("y", y);
-				
+
 				array.put(jsonFieldData);
 			}
 		}
-		
+
 		root.put("fields", array);
 	}
-	
+
 	public void loadGame(String jsonText) throws JSONException {
 		JSONObject root = new JSONObject(jsonText);
-		
+
 		loadGeneralInformations(root);
 		loadFields(root);
-		
+
 		updateInformationLabel();
 		repaint();
 	}
-	
+
 	private void loadGeneralInformations(JSONObject root) throws JSONException {
 		sizeOfGameBoard = root.getInt("sizeOfGameBoard");
 		fieldsNeededForWin = root.getInt("fieldsNeededForWin");
@@ -390,20 +389,20 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 		circlePlayerName = root.getString("circlePlayerName");
 		randomPlayerSwaps = root.getBoolean("randomPlayerSwaps");
 		playerTurn = root.getInt("playerTurn");
-		
+
 		createGameBoard(sizeOfGameBoard);
 	}
-	
+
 	private void loadFields(JSONObject root) throws JSONException {
 		JSONArray array = root.getJSONArray("fields");
-		
-		for(int i = 0; i < array.length(); i++) {
+
+		for (int i = 0; i < array.length(); i++) {
 			JSONObject field = array.getJSONObject(i);
-			
+
 			int x = field.getInt("x");
 			int y = field.getInt("y");
 			int state = field.getInt("state");
-			
+
 			gameBoard[x][y].setState(state);
 		}
 	}

@@ -27,50 +27,51 @@ public class WinnerAnnouncer extends JDialog {
 	public WinnerAnnouncer(GameBoardPanel gameBoard, String winnerName) {
 		setTitle("Tic Tac Toe - Game Ended");
 		this.gameBoard = gameBoard;
-		
-		//Block other windows
+
+		// Block other windows
 		setModal(true);
-		
+
 		componentsInitialization();
 		eventsInitialization();
-		
-		//make changes after initializing components
-		if(winnerName != null) {
+
+		// make changes after initializing components
+		if (winnerName != null) {
 			setInfoLabel(winnerName + " has won!");
 		} else {
 			setInfoLabel("Draw!");
 		}
 	}
-	
+
 	private void setInfoLabel(String text) {
 		lblInfo.setText(text);
 	}
-	
+
 	/**
-	* Adding event listeners to components
-	*/
+	 * Adding event listeners to components
+	 */
 	private void eventsInitialization() {
-		//close windows after clicking "cancel" button
+		// close windows after clicking "cancel" button
 		btnCancel.addActionListener((e) -> dispose());
-		
+
 		btnNewGame.addActionListener((e) -> {
 			gameBoard.startNewGame();
 			dispose();
 		});
 	}
-	
+
 	/**
-	* Initializing components generated via Window Builder
-	*/
+	 * Initializing components generated via Window Builder
+	 */
 	private void componentsInitialization() {
-		setMinimumSize(new Dimension(200,100));
-		setIconImage(Toolkit.getDefaultToolkit().getImage(WinnerAnnouncer.class.getResource("/kojonek2/tictactoe/resources/tic-tac-toe_16.png")));
+		setMinimumSize(new Dimension(200, 100));
+		setIconImage(Toolkit.getDefaultToolkit()
+				.getImage(WinnerAnnouncer.class.getResource("/kojonek2/tictactoe/resources/tic-tac-toe_16.png")));
 		setBounds(100, 100, 250, 150);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(new BorderLayout(0, 0));
-		
+
 		lblInfo = new JLabel("Info Label");
 		lblInfo.setHorizontalAlignment(SwingConstants.CENTER);
 		contentPanel.add(lblInfo, BorderLayout.CENTER);
@@ -89,5 +90,5 @@ public class WinnerAnnouncer extends JDialog {
 			}
 		}
 	}
-	
+
 }

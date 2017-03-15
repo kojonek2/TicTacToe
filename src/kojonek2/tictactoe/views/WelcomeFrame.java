@@ -73,17 +73,17 @@ public class WelcomeFrame extends JFrame {
 	}
 
 	private void startGame() {
-		//TODO add possibility to play without nicknames
-		if(!areInputsValid() && !chboxNoNames.isSelected()) {
+		// TODO add possibility to play without nicknames
+		if (!areInputsValid() && !chboxNoNames.isSelected()) {
 			Toolkit.getDefaultToolkit().beep();
 			JOptionPane.showMessageDialog(this, "Inputs can't be blank.");
 			return;
 		}
-		
+
 		MainFrame mainFrame;
-		if(chboxNoNames.isSelected()) {
-			mainFrame = new MainFrame((int) spnGameBoardSize.getValue(), (int) spnFieldNeededForWin.getValue(),
-					null, null);
+		if (chboxNoNames.isSelected()) {
+			mainFrame = new MainFrame((int) spnGameBoardSize.getValue(), (int) spnFieldNeededForWin.getValue(), null,
+					null);
 		} else {
 			mainFrame = createMainFrameWithNames();
 		}
@@ -91,9 +91,9 @@ public class WelcomeFrame extends JFrame {
 		mainFrame.setVisible(true);
 		dispose();
 	}
-	
+
 	private MainFrame createMainFrameWithNames() {
-		if(rbCirclePlayer1.isSelected() && rbCrossPlayer2.isSelected()) {
+		if (rbCirclePlayer1.isSelected() && rbCrossPlayer2.isSelected()) {
 			return new MainFrame((int) spnGameBoardSize.getValue(), (int) spnFieldNeededForWin.getValue(),
 					txtPlayer1Name.getText(), txtPlayer2Name.getText());
 		}
@@ -101,16 +101,16 @@ public class WelcomeFrame extends JFrame {
 			return new MainFrame((int) spnGameBoardSize.getValue(), (int) spnFieldNeededForWin.getValue(),
 					txtPlayer2Name.getText(), txtPlayer1Name.getText());
 		}
-		if(rbRandomPlayer1.isSelected() && rbRandomPlayer2.isSelected()) {
-			MainFrame mainFrame = new MainFrame((int) spnGameBoardSize.getValue(), (int) spnFieldNeededForWin.getValue(),
-					txtPlayer2Name.getText(), txtPlayer1Name.getText());
+		if (rbRandomPlayer1.isSelected() && rbRandomPlayer2.isSelected()) {
+			MainFrame mainFrame = new MainFrame((int) spnGameBoardSize.getValue(),
+					(int) spnFieldNeededForWin.getValue(), txtPlayer2Name.getText(), txtPlayer1Name.getText());
 			mainFrame.randomlySwapPlayers(true);
 			return mainFrame;
 		}
 		System.err.println("WelcomeFrame - createMainFrameWithNames: Error bad configuration of checkboxes detected");
 		return null;
 	}
-	
+
 	private boolean areInputsValid() {
 		String player1Name = txtPlayer1Name.getText().trim();
 		String player2Name = txtPlayer2Name.getText().trim();
@@ -118,7 +118,7 @@ public class WelcomeFrame extends JFrame {
 	}
 
 	private void checkBoxClicked() {
-		if(chboxNoNames.isSelected()) {
+		if (chboxNoNames.isSelected()) {
 			txtPlayer1Name.setEnabled(false);
 			txtPlayer2Name.setEnabled(false);
 			rbCirclePlayer1.setEnabled(false);
@@ -138,21 +138,21 @@ public class WelcomeFrame extends JFrame {
 			rbRandomPlayer2.setEnabled(true);
 		}
 	}
-	
+
 	/**
 	 * Adding event listeners to components
 	 */
 	private void eventsInitialization() {
 		btnStartGame.addActionListener((e) -> startGame());
-		
+
 		rbCirclePlayer1.addActionListener((e) -> rbCrossPlayer2.setSelected(true));
 		rbCrossPlayer1.addActionListener((e) -> rbCirclePlayer2.setSelected(true));
 		rbRandomPlayer1.addActionListener((e) -> rbRandomPlayer2.setSelected(true));
-		
+
 		rbCirclePlayer2.addActionListener((e) -> rbCrossPlayer1.setSelected(true));
 		rbCrossPlayer2.addActionListener((e) -> rbCirclePlayer1.setSelected(true));
 		rbRandomPlayer2.addActionListener((e) -> rbRandomPlayer1.setSelected(true));
-		
+
 		chboxNoNames.addActionListener((e) -> checkBoxClicked());
 	}
 
@@ -200,117 +200,87 @@ public class WelcomeFrame extends JFrame {
 
 		txtPlayer2Name = new JTextField();
 		txtPlayer2Name.setColumns(10);
-		
-		
+
 		rbCirclePlayer1 = new JRadioButton("Circle");
 		player1ButtonGroup.add(rbCirclePlayer1);
-		
+
 		rbCrossPlayer1 = new JRadioButton("Cross");
 		player1ButtonGroup.add(rbCrossPlayer1);
-		
+
 		rbRandomPlayer1 = new JRadioButton("Random");
 		player1ButtonGroup.add(rbRandomPlayer1);
 		rbRandomPlayer1.setSelected(true);
-		
-		
+
 		rbCirclePlayer2 = new JRadioButton("Circle");
 		player2ButtonGroup.add(rbCirclePlayer2);
-		
+
 		rbCrossPlayer2 = new JRadioButton("Cross");
 		player2ButtonGroup.add(rbCrossPlayer2);
-		
+
 		rbRandomPlayer2 = new JRadioButton("Random");
 		player2ButtonGroup.add(rbRandomPlayer2);
 		rbRandomPlayer2.setSelected(true);
-		
+
 		chboxNoNames = new JCheckBox("Play without nicknames");
-		
-		
+
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
-		gl_contentPane.setHorizontalGroup(
-			gl_contentPane.createParallelGroup(Alignment.LEADING)
+		gl_contentPane.setHorizontalGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
 				.addComponent(lblTicTacToe, GroupLayout.DEFAULT_SIZE, 434, Short.MAX_VALUE)
-				.addGroup(gl_contentPane.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(lblChoseOptionsOf, GroupLayout.DEFAULT_SIZE, 414, Short.MAX_VALUE)
-					.addGap(10))
-				.addGroup(gl_contentPane.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_contentPane.createSequentialGroup()
-							.addComponent(lblSizeOfGame)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(spnGameBoardSize, GroupLayout.PREFERRED_SIZE, 65, GroupLayout.PREFERRED_SIZE))
-						.addGroup(gl_contentPane.createSequentialGroup()
-							.addComponent(lblFieldsInRow)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(spnFieldNeededForWin, GroupLayout.PREFERRED_SIZE, 65, GroupLayout.PREFERRED_SIZE))
-						.addGroup(gl_contentPane.createSequentialGroup()
-							.addComponent(lblPlayer1Name)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(txtPlayer1Name, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(rbCirclePlayer1)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(rbCrossPlayer1)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(rbRandomPlayer1)))
-					.addContainerGap(120, Short.MAX_VALUE))
-				.addGroup(gl_contentPane.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(lblPlayer2Name)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(txtPlayer2Name, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(rbCirclePlayer2)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(rbCrossPlayer2)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(rbRandomPlayer2)
-					.addContainerGap(120, Short.MAX_VALUE))
-				.addGroup(gl_contentPane.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(chboxNoNames)
-					.addContainerGap(291, Short.MAX_VALUE))
-				.addGroup(gl_contentPane.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(btnStartGame)
-					.addContainerGap(337, Short.MAX_VALUE))
-		);
-		gl_contentPane.setVerticalGroup(
-			gl_contentPane.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_contentPane.createSequentialGroup()
-					.addComponent(lblTicTacToe)
-					.addGap(18)
-					.addComponent(lblChoseOptionsOf)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblSizeOfGame)
-						.addComponent(spnGameBoardSize, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-						.addComponent(lblFieldsInRow)
-						.addComponent(spnFieldNeededForWin, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblPlayer1Name)
-						.addComponent(txtPlayer1Name, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(rbCirclePlayer1)
-						.addComponent(rbCrossPlayer1)
-						.addComponent(rbRandomPlayer1))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
-						.addComponent(txtPlayer2Name, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblPlayer2Name)
-						.addComponent(rbCirclePlayer2)
-						.addComponent(rbCrossPlayer2)
-						.addComponent(rbRandomPlayer2))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(chboxNoNames)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnStartGame)
-					.addContainerGap(24, Short.MAX_VALUE))
-		);
+				.addGroup(gl_contentPane.createSequentialGroup().addContainerGap()
+						.addComponent(lblChoseOptionsOf, GroupLayout.DEFAULT_SIZE, 414, Short.MAX_VALUE).addGap(10))
+				.addGroup(gl_contentPane.createSequentialGroup().addContainerGap()
+						.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+								.addGroup(gl_contentPane.createSequentialGroup().addComponent(lblSizeOfGame)
+										.addPreferredGap(ComponentPlacement.RELATED).addComponent(spnGameBoardSize,
+												GroupLayout.PREFERRED_SIZE, 65, GroupLayout.PREFERRED_SIZE))
+								.addGroup(gl_contentPane.createSequentialGroup().addComponent(lblFieldsInRow)
+										.addPreferredGap(ComponentPlacement.RELATED).addComponent(spnFieldNeededForWin,
+												GroupLayout.PREFERRED_SIZE, 65, GroupLayout.PREFERRED_SIZE))
+								.addGroup(gl_contentPane.createSequentialGroup().addComponent(lblPlayer1Name)
+										.addPreferredGap(ComponentPlacement.RELATED)
+										.addComponent(txtPlayer1Name, GroupLayout.PREFERRED_SIZE,
+												GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+										.addPreferredGap(ComponentPlacement.RELATED).addComponent(rbCirclePlayer1)
+										.addPreferredGap(ComponentPlacement.RELATED).addComponent(rbCrossPlayer1)
+										.addPreferredGap(ComponentPlacement.RELATED).addComponent(rbRandomPlayer1)))
+						.addContainerGap(120, Short.MAX_VALUE))
+				.addGroup(gl_contentPane.createSequentialGroup().addContainerGap().addComponent(lblPlayer2Name)
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addComponent(txtPlayer2Name, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+								GroupLayout.PREFERRED_SIZE)
+						.addPreferredGap(ComponentPlacement.RELATED).addComponent(rbCirclePlayer2)
+						.addPreferredGap(ComponentPlacement.RELATED).addComponent(rbCrossPlayer2)
+						.addPreferredGap(ComponentPlacement.RELATED).addComponent(rbRandomPlayer2)
+						.addContainerGap(120, Short.MAX_VALUE))
+				.addGroup(gl_contentPane.createSequentialGroup().addContainerGap().addComponent(chboxNoNames)
+						.addContainerGap(291, Short.MAX_VALUE))
+				.addGroup(gl_contentPane.createSequentialGroup().addContainerGap().addComponent(btnStartGame)
+						.addContainerGap(337, Short.MAX_VALUE)));
+		gl_contentPane.setVerticalGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_contentPane.createSequentialGroup().addComponent(lblTicTacToe).addGap(18)
+						.addComponent(lblChoseOptionsOf).addPreferredGap(ComponentPlacement.RELATED)
+						.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE).addComponent(lblSizeOfGame)
+								.addComponent(spnGameBoardSize, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+										GroupLayout.PREFERRED_SIZE))
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING).addComponent(lblFieldsInRow)
+								.addComponent(spnFieldNeededForWin, GroupLayout.PREFERRED_SIZE,
+										GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE).addComponent(lblPlayer1Name)
+								.addComponent(txtPlayer1Name, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+										GroupLayout.PREFERRED_SIZE)
+								.addComponent(rbCirclePlayer1).addComponent(rbCrossPlayer1)
+								.addComponent(rbRandomPlayer1))
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+								.addComponent(txtPlayer2Name, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+										GroupLayout.PREFERRED_SIZE)
+								.addComponent(lblPlayer2Name).addComponent(rbCirclePlayer2).addComponent(rbCrossPlayer2)
+								.addComponent(rbRandomPlayer2))
+						.addPreferredGap(ComponentPlacement.RELATED).addComponent(chboxNoNames)
+						.addPreferredGap(ComponentPlacement.RELATED).addComponent(btnStartGame)
+						.addContainerGap(24, Short.MAX_VALUE)));
 		contentPane.setLayout(gl_contentPane);
 	}
 }
