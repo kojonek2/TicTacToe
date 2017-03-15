@@ -28,15 +28,18 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 	private JLabel informationLabel;
 
 	private int sizeOfGameBoard;
-	private Field[][] gameBoard;
 	private int width, height;
 	private int fieldsNeededForWin;
-	private boolean gameEnded = false;
+	
+	private Field[][] gameBoard;
+
 	private Field startedDragAtField = null;
 
 	private String crossPlayerName;
 	private String circlePlayerName;
+	
 	private boolean randomPlayerSwaps = false;
+	private boolean gameEnded = false;
 
 	private int playerTurn = Field.BLANK;
 
@@ -45,6 +48,7 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 	 */
 	public GameBoardPanel(JLabel jLabel, int sizeOfBoard, int fieldsNeededForWin) {
 		super();
+		
 		addComponentListener(this);
 		addMouseListener(this);
 
@@ -91,7 +95,7 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 		return sizeOfGameBoard;
 	}
 
-	public Field getFieldFromGameBoard(int x, int y) {
+	public Field getField(int x, int y) {
 		return gameBoard[x][y];
 	}
 
@@ -102,6 +106,7 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 				gameBoard[x][y].setState(Field.BLANK);
 			}
 		}
+		
 		playerTurn = Field.BLANK;
 
 		if (randomPlayerSwaps) {
@@ -267,7 +272,7 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 		for (int i = -1; i <= 1; i++) {
 			for (int j = -1; j <= 1; j++) {
 
-				// don't check this same spot (generates always true when i == 0
+				// don't check this same spot (always generates true when i == 0
 				// and j == 0)
 				if (!(i == 0 && j == 0)) {
 					boolean result = gameBoard[x][y].isWinningField(stateOfField, fieldsNeededForWin, i, j);
@@ -283,13 +288,12 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 
 	private void fieldClicked(Field clickedField) {
 
-		// work only if clicked on blank field
+		// do something only if clicked on blank field
 		if (!(clickedField.getState() == Field.BLANK)) {
 			return;
 		}
+		
 		clickedField.setState(playerTurn);
-
-		// repaint after changing one of fields
 		repaint();
 
 		int winner = checkForWinner();
@@ -298,12 +302,12 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 			announceWinner(winner);
 			return;
 		}
+		
 		if (getNumberOfBlankField() <= 0) {
 			announceWinner(Field.DRAW);
 			return;
 		}
 
-		// start next turn
 		nextTurn();
 	}
 
@@ -318,6 +322,7 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 		} else {
 			System.err.println("GameBoradPanel - announceWinner: invalid Winner");
 		}
+		
 		JDialog dialog = new WinnerAnnouncer(this, winnerName);
 		dialog.setVisible(true);
 		gameEnded = true;
@@ -360,12 +365,12 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 			for (int y = 0; y < sizeOfGameBoard; y++) {
 				Field field = gameBoard[x][y];
 
-				JSONObject jsonFieldData = new JSONObject();
-				jsonFieldData.put("state", field.getState());
-				jsonFieldData.put("x", x);
-				jsonFieldData.put("y", y);
+				JSONObject jsonField = new JSONObject();
+				jsonField.put("state", field.getState());
+				jsonField.put("x", x);
+				jsonField.put("y", y);
 
-				array.put(jsonFieldData);
+				array.put(jsonField);
 			}
 		}
 
@@ -390,6 +395,7 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 		randomPlayerSwaps = root.getBoolean("randomPlayerSwaps");
 		playerTurn = root.getInt("playerTurn");
 
+		// data needed to generate game board has already been set
 		createGameBoard(sizeOfGameBoard);
 	}
 
@@ -423,7 +429,7 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 		int xOfInteractedField = e.getX() / Field.lengthOfSide;
 		int yOfInteracteddField = e.getY() / Field.lengthOfSide;
 
-		// Check if it was clicked at game board
+		// Check if it was clicked at game board (JPanel is bigger than game board)
 		if (xOfInteractedField > sizeOfGameBoard - 1 || yOfInteracteddField > sizeOfGameBoard - 1) {
 			return;
 		}

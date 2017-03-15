@@ -22,7 +22,9 @@ import javax.swing.border.EmptyBorder;
 public class AboutDialog extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
+	
 	private JButton btnOk;
+	
 	private JTextArea txtAbout;
 
 	/**
@@ -42,20 +44,19 @@ public class AboutDialog extends JDialog {
 	private void setTextForAbout() {
 		InputStream stream = this.getClass().getClassLoader()
 				.getResourceAsStream("kojonek2/tictactoe/resources/About.txt");
+		
 		if (stream == null) {
 			System.err.println("AboutDialog -- stream for text file not found");
 			return;
 		}
+		
 		Scanner scanner = new Scanner(stream);
-
 		// setting delimiter to a "beginning of the input boundary" so
 		// scanner.next() reads all file
 		scanner.useDelimiter("\\A");
-
 		if (scanner.hasNext()) {
 			txtAbout.setText(scanner.next());
 		}
-
 		scanner.close();
 	}
 
@@ -74,6 +75,7 @@ public class AboutDialog extends JDialog {
 		setIconImage(Toolkit.getDefaultToolkit()
 				.getImage(WinnerAnnouncer.class.getResource("/kojonek2/tictactoe/resources/tic-tac-toe_16.png")));
 		setBounds(100, 100, 800, 500);
+		
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);

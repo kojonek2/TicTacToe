@@ -35,14 +35,17 @@ public class MainFrame extends JFrame {
 	private JFileChooser fileChooser;
 
 	private JPanel contentPane;
-	private JLabel lblInformation;
-	private JMenuItem miNewGame;
 	private GameBoardPanel gameBoard;
+	
+	private JLabel lblInformation;
+
 	private JMenu mnHelp;
-	private JMenuItem miAbout;
+
+	private JMenuItem miNewGame;
 	private JMenuItem miToWelcomeFrame;
 	private JMenuItem miSaveGame;
 	private JMenuItem miLoadGame;
+	private JMenuItem miAbout;
 
 	/**
 	 * Create the frame.
@@ -50,7 +53,6 @@ public class MainFrame extends JFrame {
 	public MainFrame(int sizeOfGameBoard, int fieldsNeededForWin, String circlePlayerName, String crossPlayerName) {
 		setTitle("Tic Tac Toe");
 
-		// initializing components and adding events listeners
 		componentsInitialization(sizeOfGameBoard, fieldsNeededForWin);
 		eventsInitialization();
 
@@ -79,6 +81,9 @@ public class MainFrame extends JFrame {
 	 */
 	private void eventsInitialization() {
 		miNewGame.addActionListener((e) -> gameBoard.startNewGame());
+		
+		miSaveGame.addActionListener((e) -> saveGame());
+		miLoadGame.addActionListener((e) -> loadGame());
 
 		miToWelcomeFrame.addActionListener((e) -> {
 			JFrame welcome = new WelcomeFrame();
@@ -90,9 +95,6 @@ public class MainFrame extends JFrame {
 			JDialog about = new AboutDialog();
 			about.setVisible(true);
 		});
-
-		miSaveGame.addActionListener((e) -> saveGame());
-		miLoadGame.addActionListener((e) -> loadGame());
 	}
 
 	/**

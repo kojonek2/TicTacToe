@@ -58,6 +58,7 @@ public class MyFileChooser extends JFileChooser {
 
 	private boolean checkExtension(File file) {
 		String extension = getExtension(file);
+		
 		if (extension == null) {
 			String path = file.getAbsolutePath();
 			setSelectedFile(new File(path + ".json"));
@@ -68,6 +69,7 @@ public class MyFileChooser extends JFileChooser {
 					JOptionPane.WARNING_MESSAGE);
 			return false;
 		}
+		
 		return true;
 	}
 

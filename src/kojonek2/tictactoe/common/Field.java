@@ -15,6 +15,7 @@ public class Field {
 
 	private int x;
 	private int y;
+	
 	private GameBoardPanel gameBoard;
 
 	public Field(GameBoardPanel gameBoard, int x, int y) {
@@ -31,7 +32,7 @@ public class Field {
 		return state;
 	}
 
-	// Recursive function which tell if this field and next in given direction
+	// Recursive function which tells if this field and next in given direction
 	// forms long enough sequence
 	public boolean isWinningField(int checkedState, int fieldsNeededForWin, int directionX, int directionY) {
 		int XOfNextCheckedField = x + directionX;
@@ -43,14 +44,14 @@ public class Field {
 		if (fieldsNeededForWin <= 1) {
 			return true;
 		}
-		if (checkForIncorrectCoordinates(XOfNextCheckedField, YOfNextCheckedField)) {
+		if (areCoordinatesCorrect(XOfNextCheckedField, YOfNextCheckedField)) {
 			return false;
 		}
-		Field nextFieldToCheck = gameBoard.getFieldFromGameBoard(XOfNextCheckedField, YOfNextCheckedField);
+		Field nextFieldToCheck = gameBoard.getField(XOfNextCheckedField, YOfNextCheckedField);
 		return nextFieldToCheck.isWinningField(checkedState, fieldsNeededForWin - 1, directionX, directionY);
 	}
 
-	private boolean checkForIncorrectCoordinates(int x, int y) {
+	private boolean areCoordinatesCorrect(int x, int y) {
 		int sizeOfGameBoard = gameBoard.getSizeOfGameBoard();
 		if (x < 0 || x >= sizeOfGameBoard) {
 			return true;

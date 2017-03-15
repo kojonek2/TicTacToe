@@ -15,11 +15,13 @@ import javax.swing.border.EmptyBorder;
 @SuppressWarnings("serial")
 public class WinnerAnnouncer extends JDialog {
 
-	private final JPanel contentPanel = new JPanel();
+	private final JPanel contentPanel;
+	private GameBoardPanel gameBoard;
+	
 	private JLabel lblInfo;
+	
 	private JButton btnNewGame;
 	private JButton btnCancel;
-	private GameBoardPanel gameBoard;
 
 	/**
 	 * Create the dialog.
@@ -28,21 +30,20 @@ public class WinnerAnnouncer extends JDialog {
 		setTitle("Tic Tac Toe - Game Ended");
 		this.gameBoard = gameBoard;
 
-		// Block other windows
 		setModal(true);
 
+		contentPanel = new JPanel();
 		componentsInitialization();
 		eventsInitialization();
 
-		// make changes after initializing components
 		if (winnerName != null) {
-			setInfoLabel(winnerName + " has won!");
+			setInfoLabelText(winnerName + " has won!");
 		} else {
-			setInfoLabel("Draw!");
+			setInfoLabelText("Draw!");
 		}
 	}
 
-	private void setInfoLabel(String text) {
+	private void setInfoLabelText(String text) {
 		lblInfo.setText(text);
 	}
 
@@ -50,7 +51,6 @@ public class WinnerAnnouncer extends JDialog {
 	 * Adding event listeners to components
 	 */
 	private void eventsInitialization() {
-		// close windows after clicking "cancel" button
 		btnCancel.addActionListener((e) -> dispose());
 
 		btnNewGame.addActionListener((e) -> {
@@ -67,6 +67,7 @@ public class WinnerAnnouncer extends JDialog {
 		setIconImage(Toolkit.getDefaultToolkit()
 				.getImage(WinnerAnnouncer.class.getResource("/kojonek2/tictactoe/resources/tic-tac-toe_16.png")));
 		setBounds(100, 100, 250, 150);
+		
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);

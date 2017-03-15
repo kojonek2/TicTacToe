@@ -26,19 +26,26 @@ import javax.swing.border.EmptyBorder;
 public class WelcomeFrame extends JFrame {
 
 	private JPanel contentPane;
+	
 	private JButton btnStartGame;
+	
 	private JSpinner spnGameBoardSize;
 	private JSpinner spnFieldNeededForWin;
+	
 	private JTextField txtPlayer1Name;
 	private JTextField txtPlayer2Name;
+	
 	private JRadioButton rbCirclePlayer1;
 	private JRadioButton rbCrossPlayer1;
 	private JRadioButton rbRandomPlayer1;
+	
 	private JRadioButton rbCirclePlayer2;
 	private JRadioButton rbCrossPlayer2;
 	private JRadioButton rbRandomPlayer2;
+	
 	private final ButtonGroup player1ButtonGroup = new ButtonGroup();
 	private final ButtonGroup player2ButtonGroup = new ButtonGroup();
+	
 	private JCheckBox chboxNoNames;
 
 	/**
@@ -50,6 +57,7 @@ public class WelcomeFrame extends JFrame {
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
+		
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -73,7 +81,6 @@ public class WelcomeFrame extends JFrame {
 	}
 
 	private void startGame() {
-		// TODO add possibility to play without nicknames
 		if (!areInputsValid() && !chboxNoNames.isSelected()) {
 			Toolkit.getDefaultToolkit().beep();
 			JOptionPane.showMessageDialog(this, "Inputs can't be blank.");
@@ -121,18 +128,22 @@ public class WelcomeFrame extends JFrame {
 		if (chboxNoNames.isSelected()) {
 			txtPlayer1Name.setEnabled(false);
 			txtPlayer2Name.setEnabled(false);
+			
 			rbCirclePlayer1.setEnabled(false);
 			rbCrossPlayer1.setEnabled(false);
 			rbRandomPlayer1.setEnabled(false);
+			
 			rbCirclePlayer2.setEnabled(false);
 			rbCrossPlayer2.setEnabled(false);
 			rbRandomPlayer2.setEnabled(false);
 		} else {
 			txtPlayer1Name.setEnabled(true);
 			txtPlayer2Name.setEnabled(true);
+			
 			rbCirclePlayer1.setEnabled(true);
 			rbCrossPlayer1.setEnabled(true);
 			rbRandomPlayer1.setEnabled(true);
+			
 			rbCirclePlayer2.setEnabled(true);
 			rbCrossPlayer2.setEnabled(true);
 			rbRandomPlayer2.setEnabled(true);
@@ -165,6 +176,7 @@ public class WelcomeFrame extends JFrame {
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
+		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
