@@ -247,7 +247,7 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 		g2d.drawImage(imgLineHorizontal, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, this);
 	}
 
-	private int checkForWinner() {
+	private int findWinner() {
 		for (int x = 0; x < gameBoard.length; x++) {
 			for (int y = 0; y < gameBoard[x].length; y++) {
 
@@ -296,7 +296,7 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 		clickedField.setState(playerTurn);
 		repaint();
 
-		int winner = checkForWinner();
+		int winner = findWinner();
 		if (!(winner == Field.BLANK)) {
 			// game ended announce winner
 			announceWinner(winner);
@@ -316,7 +316,7 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 		if (winner == Field.CROSS) {
 			winnerName = crossPlayerName;
 		} else if (winner == Field.CIRCLE) {
-			winnerName = crossPlayerName;
+			winnerName = circlePlayerName;
 		} else if (winner == Field.DRAW) {
 			winnerName = null;
 		} else {

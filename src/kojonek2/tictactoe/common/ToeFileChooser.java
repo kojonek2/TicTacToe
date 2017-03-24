@@ -7,7 +7,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 @SuppressWarnings("serial")
-public class MyFileChooser extends JFileChooser {
+public class ToeFileChooser extends JFileChooser {
 
 	@Override
 	public void approveSelection() {
@@ -23,7 +23,7 @@ public class MyFileChooser extends JFileChooser {
 	private void saveDialogApprove() {
 		File file = getSelectedFile();
 
-		if (!checkExtension(file)) {
+		if (!isJsonExtension(file)) {
 			return;
 		}
 
@@ -41,7 +41,7 @@ public class MyFileChooser extends JFileChooser {
 	private void openDialogApprove() {
 		File file = getSelectedFile();
 
-		if (!checkExtension(file)) {
+		if (!isJsonExtension(file)) {
 			return;
 		}
 
@@ -56,7 +56,7 @@ public class MyFileChooser extends JFileChooser {
 		super.approveSelection();
 	}
 
-	private boolean checkExtension(File file) {
+	private boolean isJsonExtension(File file) {
 		String extension = getExtension(file);
 		
 		if (extension == null) {

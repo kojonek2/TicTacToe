@@ -27,7 +27,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import org.json.JSONException;
 
 import kojonek2.tictactoe.common.Field;
-import kojonek2.tictactoe.common.MyFileChooser;
+import kojonek2.tictactoe.common.ToeFileChooser;
 
 @SuppressWarnings("serial")
 public class MainFrame extends JFrame {
@@ -102,7 +102,7 @@ public class MainFrame extends JFrame {
 	 */
 	private void createFileChooser() {
 		if (fileChooser == null) {
-			fileChooser = new MyFileChooser();
+			fileChooser = new ToeFileChooser();
 			FileFilter filter = new FileNameExtensionFilter("Load only .json files", "json");
 			fileChooser.setFileFilter(filter);
 

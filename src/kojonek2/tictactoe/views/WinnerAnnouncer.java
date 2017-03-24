@@ -22,7 +22,7 @@ public class WinnerAnnouncer extends JDialog {
 	
 	private JButton btnNewGame;
 	private JButton btnCancel;
-
+	
 	/**
 	 * Create the dialog.
 	 */
