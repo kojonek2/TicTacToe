@@ -7,9 +7,9 @@ import java.net.Socket;
 public class SocketWriterClient implements Runnable {
 	
 	PrintWriter out;
-	ServerConnection serverConnection;
+	ConnectionToServer serverConnection;
 
-	public SocketWriterClient(Socket serverSocket, ServerConnection serverConnection) {
+	public SocketWriterClient(Socket serverSocket, ConnectionToServer serverConnection) {
 		try {
 			out = new PrintWriter(serverSocket.getOutputStream(), true);
 		} catch (IOException e) {

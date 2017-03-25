@@ -22,7 +22,7 @@ import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
-import kojonek2.tictactoe.common.ServerConnection;
+import kojonek2.tictactoe.common.ConnectionToServer;
 
 @SuppressWarnings("serial")
 public class WelcomeFrame extends JFrame {
@@ -81,7 +81,7 @@ public class WelcomeFrame extends JFrame {
 		componentsInitialization();
 		eventsInitialization();
 		
-		new Thread(new ServerConnection()).start();
+		new Thread(new ConnectionToServer()).start();
 	}
 
 	private void startGame() {

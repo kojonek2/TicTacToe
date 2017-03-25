@@ -5,12 +5,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
+import javax.swing.JOptionPane;
+
 public class SocketReaderClient implements Runnable {
 	
-	ServerConnection serverConnection;
+	ConnectionToServer serverConnection;
 	private BufferedReader in;
 
-	public SocketReaderClient(Socket serverSocket, ServerConnection serverConnection) {
+	public SocketReaderClient(Socket serverSocket, ConnectionToServer serverConnection) {
 		try {
 			in = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
 		} catch (IOException e) {
@@ -29,7 +31,10 @@ public class SocketReaderClient implements Runnable {
 			}
 		} catch (IOException e) {
 			System.err.println("Error during reading inputStream");
-			e.printStackTrace();
+			//e.printStackTrace();
+			//probably timeout
+			JOptionPane.showMessageDialog(null, "Lost connection!", "Warning" , JOptionPane.ERROR_MESSAGE);
+			System.exit(1);
 		}
 	}
 	
