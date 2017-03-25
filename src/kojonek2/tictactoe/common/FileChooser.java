@@ -7,7 +7,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 @SuppressWarnings("serial")
-public class ToeFileChooser extends JFileChooser {
+public class FileChooser extends JFileChooser {
 
 	@Override
 	public void approveSelection() {

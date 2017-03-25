@@ -81,7 +81,7 @@ public class WelcomeFrame extends JFrame {
 		componentsInitialization();
 		eventsInitialization();
 		
-		new ServerConnection().start();
+		new Thread(new ServerConnection()).start();
 	}
 
 	private void startGame() {
