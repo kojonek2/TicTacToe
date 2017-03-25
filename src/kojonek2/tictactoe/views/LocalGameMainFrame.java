@@ -30,7 +30,7 @@ import kojonek2.tictactoe.common.Field;
 import kojonek2.tictactoe.common.FileChooser;
 
 @SuppressWarnings("serial")
-public class MainFrame extends JFrame {
+public class LocalGameMainFrame extends JFrame {
 
 	private JFileChooser fileChooser;
 
@@ -50,7 +50,7 @@ public class MainFrame extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public MainFrame(int sizeOfGameBoard, int fieldsNeededForWin, String circlePlayerName, String crossPlayerName) {
+	public LocalGameMainFrame(int sizeOfGameBoard, int fieldsNeededForWin, String circlePlayerName, String crossPlayerName) {
 		setTitle("Tic Tac Toe");
 
 		componentsInitialization(sizeOfGameBoard, fieldsNeededForWin);
@@ -86,7 +86,7 @@ public class MainFrame extends JFrame {
 		miLoadGame.addActionListener((e) -> loadGame());
 
 		miToWelcomeFrame.addActionListener((e) -> {
-			JFrame welcome = new WelcomeFrame();
+			JFrame welcome = new LocalGameOptionsFrame();
 			welcome.setVisible(true);
 			dispose();
 		});
@@ -199,7 +199,7 @@ public class MainFrame extends JFrame {
 	private void componentsInitialization(int sizeOfGameBoard, int fieldsNeededForWin) {
 		setMinimumSize(new Dimension(300, 250));
 		setIconImage(Toolkit.getDefaultToolkit()
-				.getImage(MainFrame.class.getResource("/kojonek2/tictactoe/resources/tic-tac-toe_16.png")));
+				.getImage(LocalGameMainFrame.class.getResource("/kojonek2/tictactoe/resources/tic-tac-toe_16.png")));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 800, 500);
 
