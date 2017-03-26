@@ -10,6 +10,7 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
@@ -50,8 +51,6 @@ public class WelcomeFrame extends JFrame {
 	 * Create the frame.
 	 */
 	public WelcomeFrame() {
-		setResizable(false);
-		setIconImage(Toolkit.getDefaultToolkit().getImage(WelcomeFrame.class.getResource("/kojonek2/tictactoe/resources/tic-tac-toe_16.png")));
 		setTitle("Tic Tac Toe");
 
 		componentsInitialization();
@@ -62,14 +61,30 @@ public class WelcomeFrame extends JFrame {
 	 * Adding event listeners to components
 	 */
 	private void eventsInitialization() {
-		btnPlayWithFriend.addActionListener((e) -> new LocalGameOptionsFrame().setVisible(true));
-		//TODO add new frame for choosing multiplayer game options
+		btnPlayWithFriend.addActionListener((e) -> {
+			new LocalGameOptionsFrame().setVisible(true);
+			dispose();
+		});
+		
+		btnConnect.addActionListener((e) -> {
+			String playerName = txtPlayerName.getText().trim();
+			if(playerName != null && !playerName.equals("")) {
+				new MultiGameOptionsFrame(playerName).setVisible(true);
+				dispose();
+				return;
+			}
+			Toolkit.getDefaultToolkit().beep();
+			JOptionPane.showMessageDialog(this, "You need to enter player name!", "Warning", JOptionPane.WARNING_MESSAGE);
+		});
 	}
 	
 	/**
 	 * Initializing components generated via Window Builder
 	 */
 	private void componentsInitialization() {
+		setResizable(false);
+		setIconImage(Toolkit.getDefaultToolkit().getImage(WelcomeFrame.class.getResource("/kojonek2/tictactoe/resources/tic-tac-toe_16.png")));
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		
