@@ -16,7 +16,7 @@ import javax.swing.border.EmptyBorder;
 public class WinnerAnnouncer extends JDialog {
 
 	private final JPanel contentPanel;
-	private GameBoardPanel gameBoard;
+	private GameLocalBoardPanel gameBoard;
 	
 	private JLabel lblInfo;
 	
@@ -26,7 +26,7 @@ public class WinnerAnnouncer extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public WinnerAnnouncer(GameBoardPanel gameBoard, String winnerName) {
+	public WinnerAnnouncer(GameLocalBoardPanel gameBoard, String winnerName) {
 		setTitle("Tic Tac Toe - Game Ended");
 		this.gameBoard = gameBoard;
 

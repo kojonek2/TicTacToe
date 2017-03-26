@@ -23,7 +23,7 @@ import org.json.JSONObject;
 import kojonek2.tictactoe.common.Field;
 
 @SuppressWarnings("serial")
-public class GameBoardPanel extends JPanel implements ComponentListener, MouseListener {
+public class GameLocalBoardPanel extends JPanel implements ComponentListener, MouseListener {
 
 	private JLabel informationLabel;
 
@@ -46,7 +46,7 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 	/**
 	 * Create game Board
 	 */
-	public GameBoardPanel(JLabel jLabel, int sizeOfBoard, int fieldsNeededForWin) {
+	public GameLocalBoardPanel(JLabel jLabel, int sizeOfBoard, int fieldsNeededForWin) {
 		super();
 		
 		addComponentListener(this);
@@ -183,9 +183,9 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 
 	private void drawImageOfField(Graphics2D g2d, int column, int row) {
 		Image imgCross = Toolkit.getDefaultToolkit()
-				.getImage(GameBoardPanel.class.getResource("/kojonek2/tictactoe/resources/cross_512.png"));
+				.getImage(GameLocalBoardPanel.class.getResource("/kojonek2/tictactoe/resources/cross_512.png"));
 		Image imgCircle = Toolkit.getDefaultToolkit()
-				.getImage(GameBoardPanel.class.getResource("/kojonek2/tictactoe/resources/circle_512.png"));
+				.getImage(GameLocalBoardPanel.class.getResource("/kojonek2/tictactoe/resources/circle_512.png"));
 
 		int offsetFromCorner = (int) (0.05 * Field.lengthOfSide);
 		int dx1 = column * Field.lengthOfSide + offsetFromCorner;
@@ -215,7 +215,7 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 
 	private void drawVerticalLine(Graphics2D g2d, int column, int row) {
 		Image imgLineVertical = Toolkit.getDefaultToolkit()
-				.getImage(GameBoardPanel.class.getResource("/kojonek2/tictactoe/resources/line_vertical_512.png"));
+				.getImage(GameLocalBoardPanel.class.getResource("/kojonek2/tictactoe/resources/line_vertical_512.png"));
 
 		int offsetFromCorner = (int) (0.1 * Field.lengthOfSide);
 		int dx1 = column * Field.lengthOfSide + Field.lengthOfSide / 2 + offsetFromCorner;
@@ -232,7 +232,7 @@ public class GameBoardPanel extends JPanel implements ComponentListener, MouseLi
 
 	private void drawHorizontalLine(Graphics2D g2d, int column, int row) {
 		Image imgLineHorizontal = Toolkit.getDefaultToolkit()
-				.getImage(GameBoardPanel.class.getResource("/kojonek2/tictactoe/resources/line_horizontal_512.png"));
+				.getImage(GameLocalBoardPanel.class.getResource("/kojonek2/tictactoe/resources/line_horizontal_512.png"));
 
 		int offsetFromCorner = (int) (0.1 * Field.lengthOfSide);
 		int dx1 = column * Field.lengthOfSide;

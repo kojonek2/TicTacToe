@@ -35,7 +35,7 @@ public class LocalGameMainFrame extends JFrame {
 	private JFileChooser fileChooser;
 
 	private JPanel contentPane;
-	private GameBoardPanel gameBoard;
+	private GameLocalBoardPanel gameBoard;
 	
 	private JLabel lblInformation;
 
@@ -232,7 +232,7 @@ public class LocalGameMainFrame extends JFrame {
 		setContentPane(contentPane);
 
 		lblInformation = new JLabel("Information Label");
-		gameBoard = new GameBoardPanel(lblInformation, sizeOfGameBoard, fieldsNeededForWin);
+		gameBoard = new GameLocalBoardPanel(lblInformation, sizeOfGameBoard, fieldsNeededForWin);
 
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane

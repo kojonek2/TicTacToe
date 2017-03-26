@@ -1,6 +1,6 @@
 package kojonek2.tictactoe.common;
 
-import kojonek2.tictactoe.views.GameBoardPanel;
+import kojonek2.tictactoe.views.GameLocalBoardPanel;
 
 public class Field {
 
@@ -16,9 +16,9 @@ public class Field {
 	private int x;
 	private int y;
 	
-	private GameBoardPanel gameBoard;
+	private GameLocalBoardPanel gameBoard;
 
-	public Field(GameBoardPanel gameBoard, int x, int y) {
+	public Field(GameLocalBoardPanel gameBoard, int x, int y) {
 		this.x = x;
 		this.y = y;
 		this.gameBoard = gameBoard;

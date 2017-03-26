@@ -40,6 +40,13 @@ public class ConnectionToServer implements Runnable {
 	}
 	
 	synchronized void processInput(String input) {
-		System.out.println(input);
+		String[] arguments = input.split(":");
+		switch(arguments[0]) {
+			case "ping": 
+				//ignore
+				break;
+			default:
+				System.out.println(input);
+		}
 	}
 }

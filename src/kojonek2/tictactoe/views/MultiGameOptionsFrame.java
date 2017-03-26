@@ -7,6 +7,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import kojonek2.tictactoe.common.ConnectionToServer;
+
 @SuppressWarnings("serial")
 public class MultiGameOptionsFrame extends JFrame {
 
@@ -20,6 +22,8 @@ public class MultiGameOptionsFrame extends JFrame {
 
 		componentsInitialization();
 		eventsInitialization();
+		
+		new Thread(new ConnectionToServer()).start();
 	}
 
 
