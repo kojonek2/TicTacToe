@@ -8,10 +8,15 @@ import java.util.TimerTask;
 public class ConnectionToServer implements Runnable {
 
 	private Socket serverSocket;
-	WritingQueue toSendQueue;
-	Timer pingTimer;
+	private Timer pingTimer;
 	
-	public ConnectionToServer() {
+	WritingQueue toSendQueue;
+	
+	private int idOfConnection;
+	private String playerName;
+	
+	public ConnectionToServer(String playerName) {
+		this.playerName = playerName;
 		try {
 			serverSocket = new Socket("localhost", 4554);
 			serverSocket.setSoTimeout(10000);
@@ -24,9 +29,7 @@ public class ConnectionToServer implements Runnable {
 	}
 	
 	@Override
-	public void run() {
-		toSendQueue.put("Connected");
-		
+	public void run() {		
 		new Thread(new SocketReaderClient(serverSocket, this)).start();
 		new Thread(new SocketWriterClient(serverSocket, this)).start();
 		
@@ -44,6 +47,11 @@ public class ConnectionToServer implements Runnable {
 		switch(arguments[0]) {
 			case "ping": 
 				//ignore
+				break;
+			case "Connected":
+				idOfConnection = Integer.parseInt(arguments[1]);
+				System.out.println(idOfConnection);
+				toSendQueue.put("Connected:" + playerName);
 				break;
 			default:
 				System.out.println(input);

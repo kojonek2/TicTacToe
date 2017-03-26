@@ -23,7 +23,7 @@ public class MultiGameOptionsFrame extends JFrame {
 		componentsInitialization();
 		eventsInitialization();
 		
-		new Thread(new ConnectionToServer()).start();
+		new Thread(new ConnectionToServer(playerName)).start();
 	}
 
 
