@@ -11,7 +11,10 @@ import javax.swing.JSeparator;
 import javax.swing.border.EmptyBorder;
 
 import kojonek2.tictactoe.common.ConnectionToServer;
+import kojonek2.tictactoe.common.Player;
+
 import javax.swing.JSplitPane;
+import javax.swing.ListModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.JLabel;
 import javax.swing.JSpinner;
@@ -22,6 +25,7 @@ import javax.swing.JList;
 import java.awt.Font;
 import javax.swing.JScrollPane;
 import javax.swing.ButtonGroup;
+import javax.swing.DefaultListModel;
 
 @SuppressWarnings("serial")
 public class MultiGameOptionsFrame extends JFrame {
@@ -38,6 +42,9 @@ public class MultiGameOptionsFrame extends JFrame {
 	private JRadioButton rbInviteCircleAnother;
 	private JRadioButton rbInviteCrossAnother;
 	private JRadioButton rbInviteRandomAnother;
+	
+	private JList<Player> listInvite;
+	private JList<Player> listPending;
 
 	/**
 	 * Create the frame.
@@ -100,17 +107,17 @@ public class MultiGameOptionsFrame extends JFrame {
 		JPanel panelInviteRight = new JPanel();
 		splitPaneInvite.setRightComponent(panelInviteRight);
 		
-		JLabel lblInviteSizeOfGameBoard = new JLabel("Size of game board:");
+		JLabel lblInviteSizeOfBoard = new JLabel("Size of game board:");
 		
-		JSpinner spnInviteGameBoardSize = new JSpinner();
-		spnInviteGameBoardSize.setVerifyInputWhenFocusTarget(false);
-		spnInviteGameBoardSize.setModel(new SpinnerNumberModel(3, 3, 15, 1));
+		JSpinner spnInviteSizeOfBoard = new JSpinner();
+		spnInviteSizeOfBoard.setVerifyInputWhenFocusTarget(false);
+		spnInviteSizeOfBoard.setModel(new SpinnerNumberModel(3, 3, 15, 1));
 		
-		JLabel lblInviteFIeldsNeededForWin = new JLabel("Fields in row needed for win:");
+		JLabel lblInviteFIeldsNeeded = new JLabel("Fields in row needed for win:");
 		
-		JSpinner spnInviteFieldNeededForWin = new JSpinner();
-		spnInviteFieldNeededForWin.setVerifyInputWhenFocusTarget(false);
-		spnInviteFieldNeededForWin.setModel(new SpinnerNumberModel(3, 3, 15, 1));
+		JSpinner spnInviteFieldNeeded = new JSpinner();
+		spnInviteFieldNeeded.setVerifyInputWhenFocusTarget(false);
+		spnInviteFieldNeeded.setModel(new SpinnerNumberModel(3, 3, 15, 1));
 		
 		JLabel lblInviteYou = new JLabel("You:");
 		
@@ -148,13 +155,13 @@ public class MultiGameOptionsFrame extends JFrame {
 					.addGroup(gl_panelInviteRight.createParallelGroup(Alignment.LEADING)
 						.addComponent(lblInviteChoosePlayerFrom)
 						.addGroup(gl_panelInviteRight.createSequentialGroup()
-							.addComponent(lblInviteSizeOfGameBoard, GroupLayout.PREFERRED_SIZE, 96, GroupLayout.PREFERRED_SIZE)
+							.addComponent(lblInviteSizeOfBoard, GroupLayout.PREFERRED_SIZE, 96, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(spnInviteGameBoardSize, GroupLayout.PREFERRED_SIZE, 65, GroupLayout.PREFERRED_SIZE))
+							.addComponent(spnInviteSizeOfBoard, GroupLayout.PREFERRED_SIZE, 65, GroupLayout.PREFERRED_SIZE))
 						.addGroup(gl_panelInviteRight.createSequentialGroup()
-							.addComponent(lblInviteFIeldsNeededForWin, GroupLayout.PREFERRED_SIZE, 138, GroupLayout.PREFERRED_SIZE)
-							.addGap(4)
-							.addComponent(spnInviteFieldNeededForWin, GroupLayout.PREFERRED_SIZE, 65, GroupLayout.PREFERRED_SIZE))
+							.addComponent(lblInviteFIeldsNeeded, GroupLayout.PREFERRED_SIZE, 138, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(spnInviteFieldNeeded, GroupLayout.PREFERRED_SIZE, 65, GroupLayout.PREFERRED_SIZE))
 						.addComponent(btnInvite, GroupLayout.PREFERRED_SIZE, 87, GroupLayout.PREFERRED_SIZE)
 						.addGroup(gl_panelInviteRight.createSequentialGroup()
 							.addGroup(gl_panelInviteRight.createParallelGroup(Alignment.LEADING)
@@ -179,12 +186,12 @@ public class MultiGameOptionsFrame extends JFrame {
 					.addComponent(lblInviteChoosePlayerFrom)
 					.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 					.addGroup(gl_panelInviteRight.createParallelGroup(Alignment.BASELINE)
-						.addComponent(spnInviteGameBoardSize, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblInviteSizeOfGameBoard))
+						.addComponent(spnInviteSizeOfBoard, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblInviteSizeOfBoard))
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_panelInviteRight.createParallelGroup(Alignment.LEADING)
-						.addComponent(lblInviteFIeldsNeededForWin)
-						.addComponent(spnInviteFieldNeededForWin, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addGroup(gl_panelInviteRight.createParallelGroup(Alignment.BASELINE)
+						.addComponent(spnInviteFieldNeeded, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblInviteFIeldsNeeded))
 					.addGap(5)
 					.addGroup(gl_panelInviteRight.createParallelGroup(Alignment.TRAILING)
 						.addGroup(gl_panelInviteRight.createSequentialGroup()
@@ -211,30 +218,130 @@ public class MultiGameOptionsFrame extends JFrame {
 		JScrollPane scrollPaneInviteLeft = new JScrollPane();
 		splitPaneInvite.setLeftComponent(scrollPaneInviteLeft);
 		
-		JList listInvite = new JList();
+		listInvite = new JList<Player>();
 		scrollPaneInviteLeft.setViewportView(listInvite);
 		
-		JLabel lblInviteChoosePlayerTo = new JLabel("Choose player to invite");
-		scrollPaneInviteLeft.setColumnHeaderView(lblInviteChoosePlayerTo);
+		JLabel lblInviteListHeader = new JLabel("Choose player to invite");
+		scrollPaneInviteLeft.setColumnHeaderView(lblInviteListHeader);
 		splitPaneInvite.setDividerLocation(300);
 		panelInvite.setLayout(gl_panelInvite);
 		
-		JPanel panel_1 = new JPanel();
-		contentPane.add(panel_1);
+		JPanel panelPending = new JPanel();
+		contentPane.add(panelPending);
 		
 		JSeparator separator = new JSeparator();
-		GroupLayout gl_panel_1 = new GroupLayout(panel_1);
-		gl_panel_1.setHorizontalGroup(
-			gl_panel_1.createParallelGroup(Alignment.LEADING)
-				.addGroup(Alignment.TRAILING, gl_panel_1.createSequentialGroup()
-					.addComponent(separator, GroupLayout.DEFAULT_SIZE, 434, Short.MAX_VALUE))
+		
+		JSplitPane splitPanePending = new JSplitPane();
+		splitPanePending.setEnabled(false);
+		
+		JScrollPane scrollPanePendingLeft = new JScrollPane();
+		splitPanePending.setLeftComponent(scrollPanePendingLeft);
+		
+		listPending = new JList<Player>();
+		scrollPanePendingLeft.setViewportView(listPending);
+		
+		JLabel lblPendingListHeader = new JLabel("Pending invites from players");
+		scrollPanePendingLeft.setColumnHeaderView(lblPendingListHeader);
+		
+		JPanel panelPendingRight = new JPanel();
+		splitPanePending.setRightComponent(panelPendingRight);
+		
+		JLabel lblPendingInviteDetails = new JLabel("Invite details");
+		lblPendingInviteDetails.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		
+		JLabel lblPendingSizeOfBoard = new JLabel("Size of game board:");
+		
+		JLabel lblPendingFIeldsNeeded = new JLabel("Fields in row needed for win:");
+		
+		JButton btnPendingAccept = new JButton("Accept");
+		
+		JLabel lblPendingYou = new JLabel("You:");
+		
+		JLabel lblPendingAnother = new JLabel("Abother:");
+		
+		JButton btnPendingDecline = new JButton("Decline");
+		
+		JLabel lblPendingSizeOfBoardDetails = new JLabel("0");
+		
+		JLabel lblPendingFIeldsNeededDetails = new JLabel("0");
+		
+		JLabel lblPendingAnotherDetails = new JLabel("Circle");
+		
+		JLabel lblPendingYouDetails = new JLabel("Cross");
+		GroupLayout gl_panelPendingRight = new GroupLayout(panelPendingRight);
+		gl_panelPendingRight.setHorizontalGroup(
+			gl_panelPendingRight.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panelPendingRight.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(gl_panelPendingRight.createParallelGroup(Alignment.LEADING)
+						.addComponent(lblPendingInviteDetails)
+						.addGroup(gl_panelPendingRight.createSequentialGroup()
+							.addComponent(lblPendingSizeOfBoard, GroupLayout.PREFERRED_SIZE, 96, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(lblPendingSizeOfBoardDetails))
+						.addGroup(gl_panelPendingRight.createSequentialGroup()
+							.addComponent(lblPendingFIeldsNeeded, GroupLayout.PREFERRED_SIZE, 138, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(lblPendingFIeldsNeededDetails))
+						.addGroup(gl_panelPendingRight.createSequentialGroup()
+							.addComponent(btnPendingAccept, GroupLayout.PREFERRED_SIZE, 87, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(btnPendingDecline, GroupLayout.PREFERRED_SIZE, 87, GroupLayout.PREFERRED_SIZE))
+						.addGroup(gl_panelPendingRight.createSequentialGroup()
+							.addComponent(lblPendingYou, GroupLayout.PREFERRED_SIZE, 43, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(lblPendingYouDetails))
+						.addGroup(gl_panelPendingRight.createSequentialGroup()
+							.addComponent(lblPendingAnother, GroupLayout.PREFERRED_SIZE, 43, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(lblPendingAnotherDetails)))
+					.addContainerGap(128, Short.MAX_VALUE))
 		);
-		gl_panel_1.setVerticalGroup(
-			gl_panel_1.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panel_1.createSequentialGroup()
-					.addComponent(separator, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(102, Short.MAX_VALUE))
+		gl_panelPendingRight.setVerticalGroup(
+			gl_panelPendingRight.createParallelGroup(Alignment.TRAILING)
+				.addGroup(gl_panelPendingRight.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(lblPendingInviteDetails)
+					.addPreferredGap(ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
+					.addGroup(gl_panelPendingRight.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblPendingSizeOfBoard)
+						.addComponent(lblPendingSizeOfBoardDetails))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_panelPendingRight.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblPendingFIeldsNeeded)
+						.addComponent(lblPendingFIeldsNeededDetails))
+					.addGap(15)
+					.addGroup(gl_panelPendingRight.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblPendingYou)
+						.addComponent(lblPendingYouDetails))
+					.addGap(12)
+					.addGroup(gl_panelPendingRight.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblPendingAnother)
+						.addComponent(lblPendingAnotherDetails))
+					.addGap(12)
+					.addGroup(gl_panelPendingRight.createParallelGroup(Alignment.BASELINE)
+						.addComponent(btnPendingAccept)
+						.addComponent(btnPendingDecline))
+					.addGap(42))
 		);
-		panel_1.setLayout(gl_panel_1);
+		panelPendingRight.setLayout(gl_panelPendingRight);
+		splitPanePending.setDividerLocation(300);
+		GroupLayout gl_panelPending = new GroupLayout(panelPending);
+		gl_panelPending.setHorizontalGroup(
+			gl_panelPending.createParallelGroup(Alignment.TRAILING)
+				.addGroup(gl_panelPending.createSequentialGroup()
+					.addComponent(splitPanePending, GroupLayout.PREFERRED_SIZE, 634, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(separator, GroupLayout.DEFAULT_SIZE, 634, Short.MAX_VALUE))
+		);
+		gl_panelPending.setVerticalGroup(
+			gl_panelPending.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panelPending.createSequentialGroup()
+					.addGroup(gl_panelPending.createParallelGroup(Alignment.LEADING)
+						.addComponent(separator, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(splitPanePending, GroupLayout.PREFERRED_SIZE, 208, GroupLayout.PREFERRED_SIZE))
+					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+		);
+		panelPending.setLayout(gl_panelPending);
 	}
 }

@@ -27,7 +27,7 @@ public class LocalGameOptionsFrame extends JFrame {
 	
 	private JButton btnStartGame;
 	
-	private JSpinner spnGameBoardSize;
+	private JSpinner spnSizeOfBoard;
 	private JSpinner spnFieldNeededForWin;
 	
 	private JTextField txtPlayer1Name;
@@ -65,7 +65,7 @@ public class LocalGameOptionsFrame extends JFrame {
 
 		LocalGameMainFrame mainFrame;
 		if (chboxNoNames.isSelected()) {
-			mainFrame = new LocalGameMainFrame((int) spnGameBoardSize.getValue(), (int) spnFieldNeededForWin.getValue(), null,
+			mainFrame = new LocalGameMainFrame((int) spnSizeOfBoard.getValue(), (int) spnFieldNeededForWin.getValue(), null,
 					null);
 		} else {
 			mainFrame = createMainFrameWithNames();
@@ -77,15 +77,15 @@ public class LocalGameOptionsFrame extends JFrame {
 
 	private LocalGameMainFrame createMainFrameWithNames() {
 		if (rbCirclePlayer1.isSelected() && rbCrossPlayer2.isSelected()) {
-			return new LocalGameMainFrame((int) spnGameBoardSize.getValue(), (int) spnFieldNeededForWin.getValue(),
+			return new LocalGameMainFrame((int) spnSizeOfBoard.getValue(), (int) spnFieldNeededForWin.getValue(),
 					txtPlayer1Name.getText(), txtPlayer2Name.getText());
 		}
 		if (rbCrossPlayer1.isSelected() && rbCirclePlayer2.isSelected()) {
-			return new LocalGameMainFrame((int) spnGameBoardSize.getValue(), (int) spnFieldNeededForWin.getValue(),
+			return new LocalGameMainFrame((int) spnSizeOfBoard.getValue(), (int) spnFieldNeededForWin.getValue(),
 					txtPlayer2Name.getText(), txtPlayer1Name.getText());
 		}
 		if (rbRandomPlayer1.isSelected() && rbRandomPlayer2.isSelected()) {
-			LocalGameMainFrame mainFrame = new LocalGameMainFrame((int) spnGameBoardSize.getValue(),
+			LocalGameMainFrame mainFrame = new LocalGameMainFrame((int) spnSizeOfBoard.getValue(),
 					(int) spnFieldNeededForWin.getValue(), txtPlayer2Name.getText(), txtPlayer1Name.getText());
 			mainFrame.randomlySwapPlayers(true);
 			return mainFrame;
@@ -171,9 +171,9 @@ public class LocalGameOptionsFrame extends JFrame {
 
 		JLabel lblFieldsInRow = new JLabel("Fields in row needed for win:");
 
-		spnGameBoardSize = new JSpinner();
-		spnGameBoardSize.setVerifyInputWhenFocusTarget(false);
-		spnGameBoardSize.setModel(new SpinnerNumberModel(3, 3, 15, 1));
+		spnSizeOfBoard = new JSpinner();
+		spnSizeOfBoard.setVerifyInputWhenFocusTarget(false);
+		spnSizeOfBoard.setModel(new SpinnerNumberModel(3, 3, 15, 1));
 
 		spnFieldNeededForWin = new JSpinner();
 		spnFieldNeededForWin.setModel(new SpinnerNumberModel(3, 3, 15, 1));
@@ -219,7 +219,7 @@ public class LocalGameOptionsFrame extends JFrame {
 				.addGroup(gl_contentPane.createSequentialGroup().addContainerGap()
 						.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
 								.addGroup(gl_contentPane.createSequentialGroup().addComponent(lblSizeOfGame)
-										.addPreferredGap(ComponentPlacement.RELATED).addComponent(spnGameBoardSize,
+										.addPreferredGap(ComponentPlacement.RELATED).addComponent(spnSizeOfBoard,
 												GroupLayout.PREFERRED_SIZE, 65, GroupLayout.PREFERRED_SIZE))
 								.addGroup(gl_contentPane.createSequentialGroup().addComponent(lblFieldsInRow)
 										.addPreferredGap(ComponentPlacement.RELATED).addComponent(spnFieldNeededForWin,
@@ -248,7 +248,7 @@ public class LocalGameOptionsFrame extends JFrame {
 				.addGroup(gl_contentPane.createSequentialGroup().addComponent(lblTicTacToe).addGap(18)
 						.addComponent(lblChoseOptionsOf).addPreferredGap(ComponentPlacement.RELATED)
 						.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE).addComponent(lblSizeOfGame)
-								.addComponent(spnGameBoardSize, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+								.addComponent(spnSizeOfBoard, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
 										GroupLayout.PREFERRED_SIZE))
 						.addPreferredGap(ComponentPlacement.RELATED)
 						.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING).addComponent(lblFieldsInRow)
