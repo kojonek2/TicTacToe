@@ -28,6 +28,7 @@ import org.json.JSONException;
 
 import kojonek2.tictactoe.common.Field;
 import kojonek2.tictactoe.common.FileChooser;
+import kojonek2.tictactoe.common.LocalGameController;
 
 @SuppressWarnings("serial")
 public class LocalGameMainFrame extends JFrame {
@@ -35,14 +36,15 @@ public class LocalGameMainFrame extends JFrame {
 	private JFileChooser fileChooser;
 
 	private JPanel contentPane;
-	private GameLocalBoardPanel gameBoard;
+	private LocalGameController gameController;
+	private GameLocalBoardPanel gameBoardPanel;
 	
 	private JLabel lblInformation;
 
 	private JMenu mnHelp;
 
 	private JMenuItem miNewGame;
-	private JMenuItem miToWelcomeFrame;
+	private JMenuItem miToOptionScreen;
 	private JMenuItem miSaveGame;
 	private JMenuItem miLoadGame;
 	private JMenuItem miAbout;
@@ -55,13 +57,15 @@ public class LocalGameMainFrame extends JFrame {
 
 		componentsInitialization(sizeOfGameBoard, fieldsNeededForWin);
 		eventsInitialization();
+		
+		gameController = gameBoardPanel.getGameController();
 
 		if (circlePlayerName != null && crossPlayerName != null) {
-			gameBoard.setPlayerName(Field.CIRCLE, circlePlayerName);
-			gameBoard.setPlayerName(Field.CROSS, crossPlayerName);
+			gameController.setPlayerName(Field.CIRCLE, circlePlayerName);
+			gameController.setPlayerName(Field.CROSS, crossPlayerName);
 		} else if (circlePlayerName == null && crossPlayerName == null) {
-			gameBoard.setPlayerName(Field.CIRCLE, "Circle");
-			gameBoard.setPlayerName(Field.CROSS, "Cross");
+			gameController.setPlayerName(Field.CIRCLE, "Circle");
+			gameController.setPlayerName(Field.CROSS, "Cross");
 		} else {
 			System.err.println("MainFrame - Constructor: player1Name and player2Name must be both null or both set");
 		}
@@ -69,23 +73,23 @@ public class LocalGameMainFrame extends JFrame {
 	}
 
 	public void startGame() {
-		gameBoard.startNewGame();
+		gameController.startNewGame();
 	}
 
 	public void randomlySwapPlayers(boolean b) {
-		gameBoard.setRandomPlayerSwaps(b);
+		gameController.setRandomPlayerSwaps(b);
 	}
 
 	/**
 	 * Adding event listeners to components
 	 */
 	private void eventsInitialization() {
-		miNewGame.addActionListener((e) -> gameBoard.startNewGame());
+		miNewGame.addActionListener((e) -> gameController.startNewGame());
 		
 		miSaveGame.addActionListener((e) -> saveGame());
 		miLoadGame.addActionListener((e) -> loadGame());
 
-		miToWelcomeFrame.addActionListener((e) -> {
+		miToOptionScreen.addActionListener((e) -> {
 			JFrame welcome = new LocalGameOptionsFrame();
 			welcome.setVisible(true);
 			dispose();
@@ -114,7 +118,7 @@ public class LocalGameMainFrame extends JFrame {
 
 	private void saveGame() {
 		try {
-			String save = gameBoard.saveGame();
+			String save = gameController.saveGame();
 
 			File file = askForFileToWrite();
 			if (file == null) {
@@ -170,7 +174,7 @@ public class LocalGameMainFrame extends JFrame {
 				return;
 			}
 
-			gameBoard.loadGame(save);
+			gameController.loadGame(save);
 
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -218,8 +222,8 @@ public class LocalGameMainFrame extends JFrame {
 		miLoadGame = new JMenuItem("Load Game");
 		mnGame.add(miLoadGame);
 
-		miToWelcomeFrame = new JMenuItem("Return to Welcome Screen");
-		mnGame.add(miToWelcomeFrame);
+		miToOptionScreen = new JMenuItem("Return to Option Screen");
+		mnGame.add(miToOptionScreen);
 
 		mnHelp = new JMenu("Help");
 		menuBar.add(mnHelp);
@@ -232,7 +236,7 @@ public class LocalGameMainFrame extends JFrame {
 		setContentPane(contentPane);
 
 		lblInformation = new JLabel("Information Label");
-		gameBoard = new GameLocalBoardPanel(lblInformation, sizeOfGameBoard, fieldsNeededForWin);
+		gameBoardPanel = new GameLocalBoardPanel(lblInformation, sizeOfGameBoard, fieldsNeededForWin);
 
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane
@@ -241,14 +245,14 @@ public class LocalGameMainFrame extends JFrame {
 								.addGroup(
 										gl_contentPane.createSequentialGroup().addContainerGap()
 												.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-														.addComponent(gameBoard, GroupLayout.DEFAULT_SIZE, 404,
+														.addComponent(gameBoardPanel, GroupLayout.DEFAULT_SIZE, 404,
 																Short.MAX_VALUE)
 														.addComponent(lblInformation))
 												.addContainerGap()));
 		gl_contentPane.setVerticalGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPane.createSequentialGroup().addComponent(lblInformation)
 						.addPreferredGap(ComponentPlacement.RELATED)
-						.addComponent(gameBoard, GroupLayout.DEFAULT_SIZE, 229, Short.MAX_VALUE).addContainerGap()));
+						.addComponent(gameBoardPanel, GroupLayout.DEFAULT_SIZE, 229, Short.MAX_VALUE).addContainerGap()));
 		contentPane.setLayout(gl_contentPane);
 	}
 }

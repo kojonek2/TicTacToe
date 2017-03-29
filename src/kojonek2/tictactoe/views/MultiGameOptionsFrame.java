@@ -1,31 +1,28 @@
 package kojonek2.tictactoe.views;
 
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
 
+import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
+import javax.swing.JSpinner;
+import javax.swing.JSplitPane;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.border.EmptyBorder;
 
 import kojonek2.tictactoe.common.ConnectionToServer;
 import kojonek2.tictactoe.common.Player;
-
-import javax.swing.JSplitPane;
-import javax.swing.ListModel;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.JLabel;
-import javax.swing.JSpinner;
-import javax.swing.JRadioButton;
-import javax.swing.JButton;
-import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.JList;
-import java.awt.Font;
-import javax.swing.JScrollPane;
-import javax.swing.ButtonGroup;
-import javax.swing.DefaultListModel;
 
 @SuppressWarnings("serial")
 public class MultiGameOptionsFrame extends JFrame {

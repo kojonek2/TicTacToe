@@ -1,7 +1,5 @@
 package kojonek2.tictactoe.common;
 
-import kojonek2.tictactoe.views.GameLocalBoardPanel;
-
 public class Field {
 
 	public final static int DRAW = -1;
@@ -16,12 +14,12 @@ public class Field {
 	private int x;
 	private int y;
 	
-	private GameLocalBoardPanel gameBoard;
+	private LocalGameController gameController;
 
-	public Field(GameLocalBoardPanel gameBoard, int x, int y) {
+	public Field(LocalGameController gameController, int x, int y) {
 		this.x = x;
 		this.y = y;
-		this.gameBoard = gameBoard;
+		this.gameController = gameController;
 	}
 
 	public void setState(int state) {
@@ -47,12 +45,12 @@ public class Field {
 		if (areCoordinatesCorrect(XOfNextCheckedField, YOfNextCheckedField)) {
 			return false;
 		}
-		Field nextFieldToCheck = gameBoard.getField(XOfNextCheckedField, YOfNextCheckedField);
+		Field nextFieldToCheck = gameController.getField(XOfNextCheckedField, YOfNextCheckedField);
 		return nextFieldToCheck.isWinningField(checkedState, fieldsNeededForWin - 1, directionX, directionY);
 	}
 
 	private boolean areCoordinatesCorrect(int x, int y) {
-		int sizeOfGameBoard = gameBoard.getSizeOfGameBoard();
+		int sizeOfGameBoard = gameController.getSizeOfGameBoard();
 		if (x < 0 || x >= sizeOfGameBoard) {
 			return true;
 		}

@@ -12,11 +12,13 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
+import kojonek2.tictactoe.common.LocalGameController;
+
 @SuppressWarnings("serial")
 public class WinnerAnnouncer extends JDialog {
 
 	private final JPanel contentPanel;
-	private GameLocalBoardPanel gameBoard;
+	private LocalGameController gameController;
 	
 	private JLabel lblInfo;
 	
@@ -26,9 +28,9 @@ public class WinnerAnnouncer extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public WinnerAnnouncer(GameLocalBoardPanel gameBoard, String winnerName) {
+	public WinnerAnnouncer(LocalGameController gameController, String winnerName) {
 		setTitle("Tic Tac Toe - Game Ended");
-		this.gameBoard = gameBoard;
+		this.gameController = gameController;
 
 		setModal(true);
 
@@ -54,7 +56,7 @@ public class WinnerAnnouncer extends JDialog {
 		btnCancel.addActionListener((e) -> dispose());
 
 		btnNewGame.addActionListener((e) -> {
-			gameBoard.startNewGame();
+			gameController.startNewGame();
 			dispose();
 		});
 	}
