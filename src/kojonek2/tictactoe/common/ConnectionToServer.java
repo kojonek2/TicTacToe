@@ -8,7 +8,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.swing.DefaultListModel;
-import javax.swing.JList;
+
+import kojonek2.tictactoe.views.MultiGameOptionsFrame;
 
 public class ConnectionToServer implements Runnable {
 
@@ -16,6 +17,8 @@ public class ConnectionToServer implements Runnable {
 	private Timer pingTimer;
 	
 	WritingQueue toSendQueue;
+	
+	MultiGameOptionsFrame lobbyFrame;
 	
 	private int idOfConnection;
 	private String playerName;
@@ -25,11 +28,13 @@ public class ConnectionToServer implements Runnable {
 	
 	private List<Player> playersInLobby;
 	
-	public ConnectionToServer(String playerName, JList<Player> listInvite, JList<Player> listPending) {
+	public ConnectionToServer(String playerName, MultiGameOptionsFrame lobbyFrame) {
 		this.playerName = playerName;
+		this.lobbyFrame = lobbyFrame;
 		
-		modelInvite = (DefaultListModel<Player>) listInvite.getModel();
-		modelPending = (DefaultListModel<Player>) listPending.getModel();
+		lobbyFrame.clearPendingDetails();
+		modelInvite = (DefaultListModel<Player>) lobbyFrame.getListModelInvite();
+		modelPending = (DefaultListModel<Player>) lobbyFrame.getListModelPending();
 		
 		playersInLobby = new ArrayList<Player>();
 		
@@ -106,5 +111,20 @@ public class ConnectionToServer implements Runnable {
 			return;
 		}
 		playersInLobby.remove(removed);
+	}
+	
+	public void sendInvite() {
+		String query = "Invite:Send:";
+		
+		Player player = lobbyFrame.getSelectedPlayerForInvite();
+		if(player == null) {
+			System.err.println("ConnectionToServer -- player must be selected to send invite");
+		}
+		query += player.getIdOfConnection() + ":";
+		
+		query += lobbyFrame.getSizeOfGameBoardInput() + ":" + lobbyFrame.getFieldsNeededForWinInput() + ":";
+		query += lobbyFrame.getYourStateInput() + ":" + lobbyFrame.getInvitedStateInput();
+		
+		toSendQueue.put(query);
 	}
 }

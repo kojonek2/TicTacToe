@@ -12,6 +12,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -19,16 +20,20 @@ import javax.swing.JSeparator;
 import javax.swing.JSpinner;
 import javax.swing.JSplitPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.border.EmptyBorder;
 
 import kojonek2.tictactoe.common.ConnectionToServer;
+import kojonek2.tictactoe.common.Field;
 import kojonek2.tictactoe.common.Player;
 
 @SuppressWarnings("serial")
 public class MultiGameOptionsFrame extends JFrame {
 
 	private JPanel contentPane;
+	
+	private ConnectionToServer connection;
 	
 	private final ButtonGroup buttonGroupInviteYou = new ButtonGroup();
 	private final ButtonGroup buttonGroupInviteAnother = new ButtonGroup();
@@ -41,8 +46,21 @@ public class MultiGameOptionsFrame extends JFrame {
 	private JRadioButton rbInviteCrossAnother;
 	private JRadioButton rbInviteRandomAnother;
 	
+	private JSpinner spnInviteSizeOfBoard;
+	private JSpinner spnInviteFieldNeeded;
+	
+	private JButton btnInvite;
+
+	private JButton btnPendingAccept;
+	private JButton btnPendingDecline;
+	
 	private JList<Player> listInvite;
 	private JList<Player> listPending;
+	
+	public JLabel lblPendingSizeOfBoardDetails;
+	public JLabel lblPendingFIeldsNeededDetails;
+	public JLabel lblPendingYouDetails;
+	public JLabel lblPendingAnotherDetails;
 
 	/**
 	 * Create the frame.
@@ -56,14 +74,82 @@ public class MultiGameOptionsFrame extends JFrame {
 		listInvite.setModel(new DefaultListModel<Player>());
 		listPending.setModel(new DefaultListModel<Player>());
 		
-		new Thread(new ConnectionToServer(playerName, listInvite, listPending)).start();
+		connection = new ConnectionToServer(playerName, this);
+		new Thread(connection).start();
 	}
+	
+	public int getSizeOfGameBoardInput() {
+		return (int) spnInviteSizeOfBoard.getValue();
+	}
+	
+	public int getFieldsNeededForWinInput() {
+		return (int) spnInviteFieldNeeded.getValue();
+	}
+
+	public int getYourStateInput() {
+		if(rbInviteCircleYou.isSelected()) {
+			return Field.CIRCLE;
+		} else if (rbInviteCrossYou.isSelected()) {
+			return Field.CROSS;
+		} 
+		return Field.RANDOM;
+	}
+
+	public int getInvitedStateInput() {
+		if(rbInviteCircleAnother.isSelected()) {
+			return Field.CIRCLE;
+		} else if (rbInviteCrossAnother.isSelected()) {
+			return Field.CROSS;
+		} 
+		return Field.RANDOM;
+	}
+	
+	public Player getSelectedPlayerForInvite() {
+		if(listInvite.isSelectionEmpty()) {
+			return null;
+		}
+		return listInvite.getSelectedValue();
+	}
+	
+	public DefaultListModel<Player> getListModelInvite() {
+		return (DefaultListModel<Player>) listInvite.getModel();
+	}
+	
+	public DefaultListModel<Player> getListModelPending() {
+		return (DefaultListModel<Player>) listPending.getModel();
+	}
+	
+	//Use Field.CiRCLE or Field.CROSS or Field.RANDOM for yourState and anotherState
+	public void setPedningDetails(int sizeOfGameBoard, int neededFieldsForWin, int yourState, int anotherState) {
+		
+	}
+	
+	public void clearPendingDetails() {
+		lblPendingSizeOfBoardDetails.setText("");
+		lblPendingFIeldsNeededDetails.setText("");
+		lblPendingYouDetails.setText("");
+		lblPendingAnotherDetails.setText("");
+	}
+	
+	
 	
 	/**
 	 * Adding event listeners to components
 	 */
 	private void eventsInitialization() {
 		addOnClickReactionsForRadioButtons();
+		addActionListenerInviteButton();
+	}
+	
+	private void addActionListenerInviteButton() {
+		btnInvite.addActionListener((e) -> {
+			if(listInvite.isSelectionEmpty()) {
+				Toolkit.getDefaultToolkit().beep();
+				JOptionPane.showMessageDialog(this, "You need to choose player to invite", "Warning", JOptionPane.WARNING_MESSAGE);
+				return;
+			}
+			connection.sendInvite();
+		});
 	}
 	
 	private void addOnClickReactionsForRadioButtons() {
@@ -109,13 +195,13 @@ public class MultiGameOptionsFrame extends JFrame {
 		
 		JLabel lblInviteSizeOfBoard = new JLabel("Size of game board:");
 		
-		JSpinner spnInviteSizeOfBoard = new JSpinner();
+		spnInviteSizeOfBoard = new JSpinner();
 		spnInviteSizeOfBoard.setVerifyInputWhenFocusTarget(false);
 		spnInviteSizeOfBoard.setModel(new SpinnerNumberModel(3, 3, 15, 1));
 		
 		JLabel lblInviteFIeldsNeeded = new JLabel("Fields in row needed for win:");
 		
-		JSpinner spnInviteFieldNeeded = new JSpinner();
+		spnInviteFieldNeeded = new JSpinner();
 		spnInviteFieldNeeded.setVerifyInputWhenFocusTarget(false);
 		spnInviteFieldNeeded.setModel(new SpinnerNumberModel(3, 3, 15, 1));
 		
@@ -143,7 +229,7 @@ public class MultiGameOptionsFrame extends JFrame {
 		buttonGroupInviteAnother.add(rbInviteRandomAnother);
 		rbInviteRandomAnother.setSelected(true);
 		
-		JButton btnInvite = new JButton("Invite");
+		btnInvite = new JButton("Invite");
 		
 		JLabel lblInviteChoosePlayerFrom = new JLabel("Choose game options and invite player!");
 		lblInviteChoosePlayerFrom.setFont(new Font("Tahoma", Font.PLAIN, 14));
@@ -219,6 +305,7 @@ public class MultiGameOptionsFrame extends JFrame {
 		splitPaneInvite.setLeftComponent(scrollPaneInviteLeft);
 		
 		listInvite = new JList<Player>();
+		listInvite.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		scrollPaneInviteLeft.setViewportView(listInvite);
 		
 		JLabel lblInviteListHeader = new JLabel("Choose player to invite");
@@ -238,6 +325,7 @@ public class MultiGameOptionsFrame extends JFrame {
 		splitPanePending.setLeftComponent(scrollPanePendingLeft);
 		
 		listPending = new JList<Player>();
+		listPending.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		scrollPanePendingLeft.setViewportView(listPending);
 		
 		JLabel lblPendingListHeader = new JLabel("Pending invites from players");
@@ -253,21 +341,21 @@ public class MultiGameOptionsFrame extends JFrame {
 		
 		JLabel lblPendingFIeldsNeeded = new JLabel("Fields in row needed for win:");
 		
-		JButton btnPendingAccept = new JButton("Accept");
+		btnPendingAccept = new JButton("Accept");
 		
 		JLabel lblPendingYou = new JLabel("You:");
 		
 		JLabel lblPendingAnother = new JLabel("Abother:");
 		
-		JButton btnPendingDecline = new JButton("Decline");
+		btnPendingDecline = new JButton("Decline");
 		
-		JLabel lblPendingSizeOfBoardDetails = new JLabel("0");
+		lblPendingSizeOfBoardDetails = new JLabel("0");
 		
-		JLabel lblPendingFIeldsNeededDetails = new JLabel("0");
+		lblPendingFIeldsNeededDetails = new JLabel("0");
 		
-		JLabel lblPendingAnotherDetails = new JLabel("Circle");
+		lblPendingAnotherDetails = new JLabel("Circle");
 		
-		JLabel lblPendingYouDetails = new JLabel("Cross");
+		lblPendingYouDetails = new JLabel("Cross");
 		GroupLayout gl_panelPendingRight = new GroupLayout(panelPendingRight);
 		gl_panelPendingRight.setHorizontalGroup(
 			gl_panelPendingRight.createParallelGroup(Alignment.LEADING)
