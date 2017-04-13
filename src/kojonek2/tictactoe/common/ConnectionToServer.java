@@ -2,8 +2,13 @@ package kojonek2.tictactoe.common;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import javax.swing.DefaultListModel;
+import javax.swing.JList;
 
 public class ConnectionToServer implements Runnable {
 
@@ -15,8 +20,19 @@ public class ConnectionToServer implements Runnable {
 	private int idOfConnection;
 	private String playerName;
 	
-	public ConnectionToServer(String playerName) {
+	private DefaultListModel<Player> modelInvite;
+	private DefaultListModel<Player> modelPending;
+	
+	private List<Player> playersInLobby;
+	
+	public ConnectionToServer(String playerName, JList<Player> listInvite, JList<Player> listPending) {
 		this.playerName = playerName;
+		
+		modelInvite = (DefaultListModel<Player>) listInvite.getModel();
+		modelPending = (DefaultListModel<Player>) listPending.getModel();
+		
+		playersInLobby = new ArrayList<Player>();
+		
 		try {
 			serverSocket = new Socket("localhost", 4554);
 			serverSocket.setSoTimeout(10000);
@@ -53,8 +69,42 @@ public class ConnectionToServer implements Runnable {
 				System.out.println(idOfConnection);
 				toSendQueue.put("Connected:" + playerName);
 				break;
+			case "Player":
+				if(arguments[1].equals("Add")) {
+					processPlayerJoinedLobby(arguments, input);
+				} else if(arguments[1].equals("Remove")) {
+					proccesPlayerLeftLobby(arguments);
+				} else if(arguments[1].equals("SendingAll")) {
+					modelInvite.clear();
+				} 
+				break;
 			default:
 				System.out.println(input);
 		}
+	}
+	
+	synchronized void processPlayerJoinedLobby(String[] arguments, String input) {
+		int idOfPlayer = Integer.parseInt(arguments[2]);
+		String nickOfPlayer = input.replaceFirst("Player:Add:\\d:", "");
+		Player player = new Player(idOfPlayer, nickOfPlayer);
+		playersInLobby.add(player);
+		modelInvite.addElement(player);
+		//System.out.println("Connected player id: " + idOfPlayer + " name: " + nickOfPlayer);
+	}
+	
+	synchronized void proccesPlayerLeftLobby(String[] arguments) {
+		int id = Integer.parseInt(arguments[2]);
+		Player removed = null;
+		for(Player player : playersInLobby) {
+			if(player.getIdOfConnection() == id) {
+				modelInvite.removeElement(player);
+				removed = player;
+			}
+		}
+		if(removed == null) {
+			System.err.println("ConnectionToServer - Tried to remove player from lobby who wasn't in lobby");
+			return;
+		}
+		playersInLobby.remove(removed);
 	}
 }

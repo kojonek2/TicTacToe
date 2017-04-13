@@ -5,6 +5,7 @@ import java.awt.GridLayout;
 import java.awt.Toolkit;
 
 import javax.swing.ButtonGroup;
+import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
@@ -52,10 +53,12 @@ public class MultiGameOptionsFrame extends JFrame {
 		componentsInitialization();
 		eventsInitialization();
 		
-		new Thread(new ConnectionToServer(playerName)).start();
+		listInvite.setModel(new DefaultListModel<Player>());
+		listPending.setModel(new DefaultListModel<Player>());
+		
+		new Thread(new ConnectionToServer(playerName, listInvite, listPending)).start();
 	}
-
-
+	
 	/**
 	 * Adding event listeners to components
 	 */
