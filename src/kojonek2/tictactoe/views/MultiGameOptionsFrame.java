@@ -25,7 +25,7 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.border.EmptyBorder;
 
 import kojonek2.tictactoe.common.ConnectionToServer;
-import kojonek2.tictactoe.common.Field;
+import kojonek2.tictactoe.common.FieldState;
 import kojonek2.tictactoe.common.Player;
 
 @SuppressWarnings("serial")
@@ -86,22 +86,22 @@ public class MultiGameOptionsFrame extends JFrame {
 		return (int) spnInviteFieldNeeded.getValue();
 	}
 
-	public int getYourStateInput() {
+	public FieldState getYourStateInput() {
 		if(rbInviteCircleYou.isSelected()) {
-			return Field.CIRCLE;
+			return FieldState.CIRCLE;
 		} else if (rbInviteCrossYou.isSelected()) {
-			return Field.CROSS;
+			return FieldState.CROSS;
 		} 
-		return Field.RANDOM;
+		return FieldState.RANDOM;
 	}
 
-	public int getInvitedStateInput() {
+	public FieldState getInvitedStateInput() {
 		if(rbInviteCircleAnother.isSelected()) {
-			return Field.CIRCLE;
+			return FieldState.CIRCLE;
 		} else if (rbInviteCrossAnother.isSelected()) {
-			return Field.CROSS;
+			return FieldState.CROSS;
 		} 
-		return Field.RANDOM;
+		return FieldState.RANDOM;
 	}
 	
 	public Player getSelectedPlayerForInvite() {

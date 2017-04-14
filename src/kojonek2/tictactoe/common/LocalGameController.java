@@ -25,7 +25,7 @@ public class LocalGameController {
 	private boolean randomPlayerSwaps = false;
 	private boolean gameEnded = false;
 
-	private int playerTurn = Field.BLANK;
+	private FieldState playerTurn = FieldState.BLANK;
 	
 	private String crossPlayerName;
 	private String circlePlayerName;
@@ -54,12 +54,12 @@ public class LocalGameController {
 	 * @param name
 	 *            player's name
 	 */
-	public void setPlayerName(int playerFieldStatus, String name) {
-		if (playerFieldStatus == Field.CIRCLE) {
+	public void setPlayerName(FieldState playerFieldStatus, String name) {
+		if (playerFieldStatus == FieldState.CIRCLE) {
 			circlePlayerName = name;
 			return;
 		}
-		if (playerFieldStatus == Field.CROSS) {
+		if (playerFieldStatus == FieldState.CROSS) {
 			crossPlayerName = name;
 			return;
 		}
@@ -98,29 +98,29 @@ public class LocalGameController {
 		return gameBoard[x][y];
 	}
 	
-	public int getPlayerTurn() {
+	public FieldState getPlayerTurn() {
 		return playerTurn;
 	}
 	
 	public void fieldClicked(Field clickedField) {
 
 		// do something only if clicked on blank field
-		if (!(clickedField.getState() == Field.BLANK)) {
+		if (!(clickedField.getState() == FieldState.BLANK)) {
 			return;
 		}
 		
 		clickedField.setState(playerTurn);
 		gameBoardPanel.repaint();
 
-		int winner = findWinner();
-		if (!(winner == Field.BLANK)) {
+		FieldState winner = findWinner();
+		if (!(winner == FieldState.BLANK)) {
 			// game ended announce winner
 			announceWinner(winner);
 			return;
 		}
 		
 		if (getNumberOfBlankField() <= 0) {
-			announceWinner(Field.DRAW);
+			announceWinner(FieldState.DRAW);
 			return;
 		}
 
@@ -131,11 +131,11 @@ public class LocalGameController {
 		// reverting state of the all variables to state from start of the game
 		for (int x = 0; x < gameBoard.length; x++) {
 			for (int y = 0; y < gameBoard.length; y++) {
-				gameBoard[x][y].setState(Field.BLANK);
+				gameBoard[x][y].setState(FieldState.BLANK);
 			}
 		}
 		
-		playerTurn = Field.BLANK;
+		playerTurn = FieldState.BLANK;
 
 		if (randomPlayerSwaps) {
 			if (ThreadLocalRandom.current().nextInt(2) == 0) {
@@ -151,12 +151,13 @@ public class LocalGameController {
 	}
 
 	private void nextTurn() {
-		if (playerTurn == Field.CROSS) {
-			playerTurn = Field.CIRCLE;
-		} else if (playerTurn == Field.CIRCLE) {
-			playerTurn = Field.CROSS;
+		if (playerTurn == FieldState.CROSS) {
+			playerTurn = FieldState.CIRCLE;
+		} else if (playerTurn == FieldState.CIRCLE) {
+			playerTurn = FieldState.CROSS;
 		} else {
-			playerTurn = ThreadLocalRandom.current().nextInt(1, 3);
+			int random = ThreadLocalRandom.current().nextInt(1, 3);
+			playerTurn = FieldState.fromInt(random);
 		}
 
 		gameBoardPanel.updateInformationLabel();
@@ -171,28 +172,28 @@ public class LocalGameController {
 		}
 	}
 
-	private int findWinner() {
+	private FieldState findWinner() {
 		for (int x = 0; x < gameBoard.length; x++) {
 			for (int y = 0; y < gameBoard[x].length; y++) {
 
 				Field field = gameBoard[x][y];
-				int stateOfField = field.getState();
-				if (stateOfField == Field.CIRCLE) {
-					if (isFieldCreatingWinningRow(Field.CIRCLE, x, y)) {
-						return Field.CIRCLE;
+				FieldState stateOfField = field.getState();
+				if (stateOfField == FieldState.CIRCLE) {
+					if (isFieldCreatingWinningRow(FieldState.CIRCLE, x, y)) {
+						return FieldState.CIRCLE;
 					}
-				} else if (stateOfField == Field.CROSS) {
-					if (isFieldCreatingWinningRow(Field.CROSS, x, y)) {
-						return Field.CROSS;
+				} else if (stateOfField == FieldState.CROSS) {
+					if (isFieldCreatingWinningRow(FieldState.CROSS, x, y)) {
+						return FieldState.CROSS;
 					}
 				}
 
 			}
 		}
-		return Field.BLANK;
+		return FieldState.BLANK;
 	}
 
-	private boolean isFieldCreatingWinningRow(int stateOfField, int x, int y) {
+	private boolean isFieldCreatingWinningRow(FieldState stateOfField, int x, int y) {
 		for (int i = -1; i <= 1; i++) {
 			for (int j = -1; j <= 1; j++) {
 
@@ -210,13 +211,13 @@ public class LocalGameController {
 		return false;
 	}
 
-	private void announceWinner(int winner) {
+	private void announceWinner(FieldState winner) {
 		String winnerName = "";
-		if (winner == Field.CROSS) {
+		if (winner == FieldState.CROSS) {
 			winnerName = crossPlayerName;
-		} else if (winner == Field.CIRCLE) {
+		} else if (winner == FieldState.CIRCLE) {
 			winnerName = circlePlayerName;
-		} else if (winner == Field.DRAW) {
+		} else if (winner == FieldState.DRAW) {
 			winnerName = null;
 		} else {
 			System.err.println("GameBoradPanel - announceWinner: invalid Winner");
@@ -231,7 +232,7 @@ public class LocalGameController {
 		int result = 0;
 		for (Field[] array : gameBoard) {
 			for (Field field : array) {
-				if (field.getState() == Field.BLANK) {
+				if (field.getState() == FieldState.BLANK) {
 					result++;
 				}
 			}
@@ -254,7 +255,7 @@ public class LocalGameController {
 		root.put("crossPlayerName", crossPlayerName);
 		root.put("circlePlayerName", circlePlayerName);
 		root.put("randomPlayerSwaps", randomPlayerSwaps);
-		root.put("playerTurn", playerTurn);
+		root.put("playerTurn", playerTurn.getValue());
 	}
 
 	private void saveFields(JSONObject root) throws JSONException {
@@ -265,7 +266,7 @@ public class LocalGameController {
 				Field field = gameBoard[x][y];
 
 				JSONObject jsonField = new JSONObject();
-				jsonField.put("state", field.getState());
+				jsonField.put("state", field.getState().getValue());
 				jsonField.put("x", x);
 				jsonField.put("y", y);
 
@@ -292,7 +293,7 @@ public class LocalGameController {
 		crossPlayerName = root.getString("crossPlayerName");
 		circlePlayerName = root.getString("circlePlayerName");
 		randomPlayerSwaps = root.getBoolean("randomPlayerSwaps");
-		playerTurn = root.getInt("playerTurn");
+		playerTurn = FieldState.fromInt(root.getInt("playerTurn"));
 
 		// data needed to generate game board has already been set
 		createGameBoard(sizeOfGameBoard);
@@ -306,7 +307,10 @@ public class LocalGameController {
 
 			int x = field.getInt("x");
 			int y = field.getInt("y");
-			int state = field.getInt("state");
+			FieldState state = FieldState.fromInt(field.getInt("state"));
+			if(state == null) {
+				System.err.println("LocalGameController:loadFields -- error during loading save");
+			}
 
 			gameBoard[x][y].setState(state);
 		}

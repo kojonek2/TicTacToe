@@ -123,7 +123,7 @@ public class ConnectionToServer implements Runnable {
 		query += player.getIdOfConnection() + ":";
 		
 		query += lobbyFrame.getSizeOfGameBoardInput() + ":" + lobbyFrame.getFieldsNeededForWinInput() + ":";
-		query += lobbyFrame.getYourStateInput() + ":" + lobbyFrame.getInvitedStateInput();
+		query += lobbyFrame.getYourStateInput().getValue() + ":" + lobbyFrame.getInvitedStateInput().getValue();
 		
 		toSendQueue.put(query);
 	}

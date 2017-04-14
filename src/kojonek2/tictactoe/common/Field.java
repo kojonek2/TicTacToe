@@ -2,15 +2,9 @@ package kojonek2.tictactoe.common;
 
 public class Field {
 
-	public final static int DRAW = -1;
-	public final static int BLANK = 0;
-	public final static int CROSS = 1;
-	public final static int CIRCLE = 2;
-	public final static int RANDOM = 3;
-
 	public static int lengthOfSide;
 
-	private int state = 0;
+	private FieldState state = FieldState.BLANK;
 
 	private int x;
 	private int y;
@@ -23,17 +17,17 @@ public class Field {
 		this.gameController = gameController;
 	}
 
-	public void setState(int state) {
+	public void setState(FieldState state) {
 		this.state = state;
 	}
 
-	public int getState() {
+	public FieldState getState() {
 		return state;
 	}
 
 	// Recursive function which tells if this field and next in given direction
 	// forms long enough sequence
-	public boolean isWinningField(int checkedState, int fieldsNeededForWin, int directionX, int directionY) {
+	public boolean isWinningField(FieldState checkedState, int fieldsNeededForWin, int directionX, int directionY) {
 		int XOfNextCheckedField = x + directionX;
 		int YOfNextCheckedField = y + directionY;
 

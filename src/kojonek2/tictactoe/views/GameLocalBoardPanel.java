@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import kojonek2.tictactoe.common.Field;
+import kojonek2.tictactoe.common.FieldState;
 import kojonek2.tictactoe.common.LocalGameController;
 
 @SuppressWarnings("serial")
@@ -44,10 +45,10 @@ public class GameLocalBoardPanel extends JPanel implements ComponentListener, Mo
 	}
 
 	public void updateInformationLabel() {
-		int playerTurn = localGame.getPlayerTurn();
-		if (playerTurn == Field.CROSS) {
+		FieldState playerTurn = localGame.getPlayerTurn();
+		if (playerTurn == FieldState.CROSS) {
 			SwingUtilities.invokeLater(() -> informationLabel.setText("Turn: " + localGame.getCrossPlayerName()));
-		} else if (playerTurn == Field.CIRCLE) {
+		} else if (playerTurn == FieldState.CIRCLE) {
 			SwingUtilities.invokeLater(() -> informationLabel.setText("Turn: " + localGame.getCirclePlayerName()));
 		} else {
 			SwingUtilities.invokeLater(() -> informationLabel.setText("Error"));
@@ -102,9 +103,9 @@ public class GameLocalBoardPanel extends JPanel implements ComponentListener, Mo
 		int sy1 = 0;
 		int sy2 = 512;
 
-		if (localGame.getField(column, row).getState() == Field.CIRCLE) {
+		if (localGame.getField(column, row).getState() == FieldState.CIRCLE) {
 			g2d.drawImage(imgCircle, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, this);
-		} else if (localGame.getField(column, row).getState() == Field.CROSS) {
+		} else if (localGame.getField(column, row).getState() == FieldState.CROSS) {
 			g2d.drawImage(imgCross, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, this);
 		}
 	}

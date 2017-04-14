@@ -26,7 +26,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.json.JSONException;
 
-import kojonek2.tictactoe.common.Field;
+import kojonek2.tictactoe.common.FieldState;
 import kojonek2.tictactoe.common.FileChooser;
 import kojonek2.tictactoe.common.LocalGameController;
 
@@ -61,11 +61,11 @@ public class LocalGameMainFrame extends JFrame {
 		gameController = gameBoardPanel.getGameController();
 
 		if (circlePlayerName != null && crossPlayerName != null) {
-			gameController.setPlayerName(Field.CIRCLE, circlePlayerName);
-			gameController.setPlayerName(Field.CROSS, crossPlayerName);
+			gameController.setPlayerName(FieldState.CIRCLE, circlePlayerName);
+			gameController.setPlayerName(FieldState.CROSS, crossPlayerName);
 		} else if (circlePlayerName == null && crossPlayerName == null) {
-			gameController.setPlayerName(Field.CIRCLE, "Circle");
-			gameController.setPlayerName(Field.CROSS, "Cross");
+			gameController.setPlayerName(FieldState.CIRCLE, "Circle");
+			gameController.setPlayerName(FieldState.CROSS, "Cross");
 		} else {
 			System.err.println("MainFrame - Constructor: player1Name and player2Name must be both null or both set");
 		}
