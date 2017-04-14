@@ -1,5 +1,6 @@
 package kojonek2.tictactoe.views;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.io.File;
@@ -25,6 +26,7 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import kojonek2.tictactoe.common.FieldState;
 import kojonek2.tictactoe.common.FileChooser;
@@ -33,7 +35,7 @@ import kojonek2.tictactoe.common.LocalGameController;
 @SuppressWarnings("serial")
 public class LocalGameMainFrame extends JFrame {
 
-	private JFileChooser fileChooser;
+	private static JFileChooser fileChooser;
 
 	private JPanel contentPane;
 	private LocalGameController gameController;
@@ -87,7 +89,10 @@ public class LocalGameMainFrame extends JFrame {
 		miNewGame.addActionListener((e) -> gameController.startNewGame());
 		
 		miSaveGame.addActionListener((e) -> saveGame());
-		miLoadGame.addActionListener((e) -> loadGame());
+		miLoadGame.addActionListener((e) -> {
+			String save = loadSave(this);
+			loadGame(save);
+		});
 
 		miToOptionScreen.addActionListener((e) -> {
 			JFrame welcome = new LocalGameOptionsFrame();
@@ -104,7 +109,7 @@ public class LocalGameMainFrame extends JFrame {
 	/**
 	 * Creates fileChooser if there isn't one
 	 */
-	private void createFileChooser() {
+	private static void createFileChooser() {
 		if (fileChooser == null) {
 			fileChooser = new FileChooser();
 			FileFilter filter = new FileNameExtensionFilter("Load only .json files", "json");
@@ -151,13 +156,37 @@ public class LocalGameMainFrame extends JFrame {
 		return null;
 	}
 
-	private void loadGame() {
+	static void loadGameStatic(Component parent) {
+		try {
+			String save = loadSave(parent);
+			
+			JSONObject root = new JSONObject(save);
+			int sizeOfGameBoard = root.getInt("sizeOfGameBoard");
+			int fieldsNeededForWin = root.getInt("fieldsNeededForWin");
+			String circlePlayerName = root.getString("circlePlayerName");
+			String crossPlayerName = root.getString("crossPlayerName");
+			
+			
+			LocalGameMainFrame mainFrame = new LocalGameMainFrame(sizeOfGameBoard, fieldsNeededForWin, circlePlayerName, crossPlayerName);
+			mainFrame.loadGame(save);
+			mainFrame.setVisible(true);
+			
+		} catch (JSONException e) {
+			e.printStackTrace();
+			Toolkit.getDefaultToolkit().beep();
+			JOptionPane.showMessageDialog(parent, "Error occured during loading save!!", "Loading error",
+					JOptionPane.ERROR_MESSAGE);
+		}
+		
+	}
+		
+	private static String loadSave(Component parent) {
 		try {
 			String save = "";
 
-			File file = askForFileToLoad();
+			File file = askForFileToLoad(parent);
 			if (file == null) {
-				return;
+				return null;
 			}
 
 			Scanner scanner = new Scanner(file);
@@ -169,11 +198,23 @@ public class LocalGameMainFrame extends JFrame {
 			} else {
 				scanner.close();
 				Toolkit.getDefaultToolkit().beep();
-				JOptionPane.showMessageDialog(this, "Corruped or blank save.", "Loading error",
+				JOptionPane.showMessageDialog(parent, "Corruped or blank save.", "Loading error",
 						JOptionPane.ERROR_MESSAGE);
-				return;
+				return null;
 			}
 
+			return save;
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			Toolkit.getDefaultToolkit().beep();
+			JOptionPane.showMessageDialog(parent, "Save file not found!!", "Saving error", JOptionPane.ERROR_MESSAGE);
+			return null;
+		}
+	}
+	
+	private void loadGame(String save) {
+		try {
 			gameController.loadGame(save);
 
 		} catch (JSONException e) {
@@ -181,16 +222,12 @@ public class LocalGameMainFrame extends JFrame {
 			Toolkit.getDefaultToolkit().beep();
 			JOptionPane.showMessageDialog(this, "Error occured during loading save!!", "Loading error",
 					JOptionPane.ERROR_MESSAGE);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			Toolkit.getDefaultToolkit().beep();
-			JOptionPane.showMessageDialog(this, "Save file not found!!", "Saving error", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
-	private File askForFileToLoad() {
+	private static File askForFileToLoad(Component parent) {
 		createFileChooser();
-		int resultCode = fileChooser.showOpenDialog(this);
+		int resultCode = fileChooser.showOpenDialog(parent);
 		if (resultCode == JFileChooser.APPROVE_OPTION) {
 			return fileChooser.getSelectedFile();
 		}

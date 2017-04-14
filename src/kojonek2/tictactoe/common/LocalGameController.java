@@ -315,5 +315,4 @@ public class LocalGameController {
 			gameBoard[x][y].setState(state);
 		}
 	}
-
 }

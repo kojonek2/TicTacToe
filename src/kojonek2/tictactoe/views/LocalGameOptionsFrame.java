@@ -26,6 +26,7 @@ public class LocalGameOptionsFrame extends JFrame {
 	private JPanel contentPane;
 	
 	private JButton btnStartGame;
+	private JButton btnLoadGame;
 	
 	private JSpinner spnSizeOfBoard;
 	private JSpinner spnFieldNeededForWin;
@@ -131,6 +132,10 @@ public class LocalGameOptionsFrame extends JFrame {
 	 */
 	private void eventsInitialization() {
 		btnStartGame.addActionListener((e) -> startGame());
+		btnLoadGame.addActionListener((e) -> {
+			LocalGameMainFrame.loadGameStatic(this);
+			dispose();
+		});
 
 		rbCirclePlayer1.addActionListener((e) -> rbCrossPlayer2.setSelected(true));
 		rbCrossPlayer1.addActionListener((e) -> rbCirclePlayer2.setSelected(true));
@@ -210,65 +215,98 @@ public class LocalGameOptionsFrame extends JFrame {
 		rbRandomPlayer2.setSelected(true);
 
 		chboxNoNames = new JCheckBox("Play without nicknames");
+		
+		btnLoadGame = new JButton("Load Game");
 
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
-		gl_contentPane.setHorizontalGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+		gl_contentPane.setHorizontalGroup(
+			gl_contentPane.createParallelGroup(Alignment.LEADING)
 				.addComponent(lblTicTacToe, GroupLayout.DEFAULT_SIZE, 434, Short.MAX_VALUE)
-				.addGroup(gl_contentPane.createSequentialGroup().addContainerGap()
-						.addComponent(lblChoseOptionsOf, GroupLayout.DEFAULT_SIZE, 414, Short.MAX_VALUE).addGap(10))
-				.addGroup(gl_contentPane.createSequentialGroup().addContainerGap()
-						.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-								.addGroup(gl_contentPane.createSequentialGroup().addComponent(lblSizeOfGame)
-										.addPreferredGap(ComponentPlacement.RELATED).addComponent(spnSizeOfBoard,
-												GroupLayout.PREFERRED_SIZE, 65, GroupLayout.PREFERRED_SIZE))
-								.addGroup(gl_contentPane.createSequentialGroup().addComponent(lblFieldsInRow)
-										.addPreferredGap(ComponentPlacement.RELATED).addComponent(spnFieldNeededForWin,
-												GroupLayout.PREFERRED_SIZE, 65, GroupLayout.PREFERRED_SIZE))
-								.addGroup(gl_contentPane.createSequentialGroup().addComponent(lblPlayer1Name)
-										.addPreferredGap(ComponentPlacement.RELATED)
-										.addComponent(txtPlayer1Name, GroupLayout.PREFERRED_SIZE,
-												GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-										.addPreferredGap(ComponentPlacement.RELATED).addComponent(rbCirclePlayer1)
-										.addPreferredGap(ComponentPlacement.RELATED).addComponent(rbCrossPlayer1)
-										.addPreferredGap(ComponentPlacement.RELATED).addComponent(rbRandomPlayer1)))
-						.addContainerGap(120, Short.MAX_VALUE))
-				.addGroup(gl_contentPane.createSequentialGroup().addContainerGap().addComponent(lblPlayer2Name)
-						.addPreferredGap(ComponentPlacement.RELATED)
-						.addComponent(txtPlayer2Name, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-								GroupLayout.PREFERRED_SIZE)
-						.addPreferredGap(ComponentPlacement.RELATED).addComponent(rbCirclePlayer2)
-						.addPreferredGap(ComponentPlacement.RELATED).addComponent(rbCrossPlayer2)
-						.addPreferredGap(ComponentPlacement.RELATED).addComponent(rbRandomPlayer2)
-						.addContainerGap(120, Short.MAX_VALUE))
-				.addGroup(gl_contentPane.createSequentialGroup().addContainerGap().addComponent(chboxNoNames)
-						.addContainerGap(291, Short.MAX_VALUE))
-				.addGroup(gl_contentPane.createSequentialGroup().addContainerGap().addComponent(btnStartGame)
-						.addContainerGap(337, Short.MAX_VALUE)));
-		gl_contentPane.setVerticalGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_contentPane.createSequentialGroup().addComponent(lblTicTacToe).addGap(18)
-						.addComponent(lblChoseOptionsOf).addPreferredGap(ComponentPlacement.RELATED)
-						.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE).addComponent(lblSizeOfGame)
-								.addComponent(spnSizeOfBoard, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-										GroupLayout.PREFERRED_SIZE))
-						.addPreferredGap(ComponentPlacement.RELATED)
-						.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING).addComponent(lblFieldsInRow)
-								.addComponent(spnFieldNeededForWin, GroupLayout.PREFERRED_SIZE,
-										GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-						.addPreferredGap(ComponentPlacement.RELATED)
-						.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE).addComponent(lblPlayer1Name)
-								.addComponent(txtPlayer1Name, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-										GroupLayout.PREFERRED_SIZE)
-								.addComponent(rbCirclePlayer1).addComponent(rbCrossPlayer1)
-								.addComponent(rbRandomPlayer1))
-						.addPreferredGap(ComponentPlacement.RELATED)
-						.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
-								.addComponent(txtPlayer2Name, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-										GroupLayout.PREFERRED_SIZE)
-								.addComponent(lblPlayer2Name).addComponent(rbCirclePlayer2).addComponent(rbCrossPlayer2)
-								.addComponent(rbRandomPlayer2))
-						.addPreferredGap(ComponentPlacement.RELATED).addComponent(chboxNoNames)
-						.addPreferredGap(ComponentPlacement.RELATED).addComponent(btnStartGame)
-						.addContainerGap(24, Short.MAX_VALUE)));
+				.addGroup(gl_contentPane.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(lblChoseOptionsOf, GroupLayout.DEFAULT_SIZE, 414, Short.MAX_VALUE)
+					.addGap(10))
+				.addGroup(gl_contentPane.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addComponent(lblSizeOfGame)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(spnSizeOfBoard, GroupLayout.PREFERRED_SIZE, 65, GroupLayout.PREFERRED_SIZE))
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addComponent(lblFieldsInRow)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(spnFieldNeededForWin, GroupLayout.PREFERRED_SIZE, 65, GroupLayout.PREFERRED_SIZE))
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addComponent(lblPlayer1Name)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(txtPlayer1Name, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(rbCirclePlayer1)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(rbCrossPlayer1)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(rbRandomPlayer1)))
+					.addContainerGap(120, Short.MAX_VALUE))
+				.addGroup(gl_contentPane.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(lblPlayer2Name)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(txtPlayer2Name, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(rbCirclePlayer2)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(rbCrossPlayer2)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(rbRandomPlayer2)
+					.addContainerGap(120, Short.MAX_VALUE))
+				.addGroup(gl_contentPane.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(chboxNoNames)
+					.addContainerGap(291, Short.MAX_VALUE))
+				.addGroup(gl_contentPane.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(btnStartGame)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(btnLoadGame)
+					.addContainerGap(242, Short.MAX_VALUE))
+		);
+		gl_contentPane.setVerticalGroup(
+			gl_contentPane.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_contentPane.createSequentialGroup()
+					.addComponent(lblTicTacToe)
+					.addGap(18)
+					.addComponent(lblChoseOptionsOf)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblSizeOfGame)
+						.addComponent(spnSizeOfBoard, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+						.addComponent(lblFieldsInRow)
+						.addComponent(spnFieldNeededForWin, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblPlayer1Name)
+						.addComponent(txtPlayer1Name, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(rbCirclePlayer1)
+						.addComponent(rbCrossPlayer1)
+						.addComponent(rbRandomPlayer1))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+						.addComponent(txtPlayer2Name, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblPlayer2Name)
+						.addComponent(rbCirclePlayer2)
+						.addComponent(rbCrossPlayer2)
+						.addComponent(rbRandomPlayer2))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(chboxNoNames)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+						.addComponent(btnStartGame)
+						.addComponent(btnLoadGame))
+					.addContainerGap(24, Short.MAX_VALUE))
+		);
 		contentPane.setLayout(gl_contentPane);
 	}
 }
