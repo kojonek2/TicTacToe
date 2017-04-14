@@ -24,7 +24,7 @@ public class ConnectionToServer implements Runnable {
 	private String playerName;
 	
 	private DefaultListModel<Player> modelInvite;
-	private DefaultListModel<Player> modelPending;
+	private DefaultListModel<Invite> modelPending;
 	
 	private List<Player> playersInLobby;
 	
@@ -34,7 +34,7 @@ public class ConnectionToServer implements Runnable {
 		
 		lobbyFrame.clearPendingDetails();
 		modelInvite = (DefaultListModel<Player>) lobbyFrame.getListModelInvite();
-		modelPending = (DefaultListModel<Player>) lobbyFrame.getListModelPending();
+		modelPending = (DefaultListModel<Invite>) lobbyFrame.getListModelPending();
 		
 		playersInLobby = new ArrayList<Player>();
 		
@@ -45,6 +45,7 @@ public class ConnectionToServer implements Runnable {
 			System.err.println("Error during establishing connection!");
 			e.printStackTrace();
 		}
+		
 		toSendQueue = new WritingQueue();
 		pingTimer = new Timer();
 	}
@@ -80,6 +81,7 @@ public class ConnectionToServer implements Runnable {
 				} else if(arguments[1].equals("Remove")) {
 					proccesPlayerLeftLobby(arguments);
 				} else if(arguments[1].equals("SendingAll")) {
+					playersInLobby.clear();
 					modelInvite.clear();
 				} 
 				break;
@@ -91,6 +93,7 @@ public class ConnectionToServer implements Runnable {
 	synchronized void processPlayerJoinedLobby(String[] arguments, String input) {
 		int idOfPlayer = Integer.parseInt(arguments[2]);
 		String nickOfPlayer = input.replaceFirst("Player:Add:\\d:", "");
+		
 		Player player = new Player(idOfPlayer, nickOfPlayer);
 		playersInLobby.add(player);
 		modelInvite.addElement(player);
@@ -108,11 +111,13 @@ public class ConnectionToServer implements Runnable {
 		}
 		if(removed == null) {
 			System.err.println("ConnectionToServer - Tried to remove player from lobby who wasn't in lobby");
+			toSendQueue.put("Player:GetAll"); //refreshing player list
 			return;
 		}
 		playersInLobby.remove(removed);
 	}
 	
+	//invite send query always has first your state and then invited player or player who invites you
 	public void sendInvite() {
 		String query = "Invite:Send:";
 		

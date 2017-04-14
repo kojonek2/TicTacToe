@@ -16,6 +16,10 @@ public class Player {
 		return idOfConnection;
 	}
 	
+	String getNick() {
+		return nick;
+	}
+	
 	void setSentInvite(boolean b) {
 		sentInvite = b;
 	}

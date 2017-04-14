@@ -26,6 +26,7 @@ import javax.swing.border.EmptyBorder;
 
 import kojonek2.tictactoe.common.ConnectionToServer;
 import kojonek2.tictactoe.common.FieldState;
+import kojonek2.tictactoe.common.Invite;
 import kojonek2.tictactoe.common.Player;
 
 @SuppressWarnings("serial")
@@ -55,12 +56,12 @@ public class MultiGameOptionsFrame extends JFrame {
 	private JButton btnPendingDecline;
 	
 	private JList<Player> listInvite;
-	private JList<Player> listPending;
+	private JList<Invite> listPending;
 	
 	public JLabel lblPendingSizeOfBoardDetails;
 	public JLabel lblPendingFIeldsNeededDetails;
 	public JLabel lblPendingYouDetails;
-	public JLabel lblPendingAnotherDetails;
+	public JLabel lblPendingSenderDetails;
 
 	/**
 	 * Create the frame.
@@ -72,7 +73,7 @@ public class MultiGameOptionsFrame extends JFrame {
 		eventsInitialization();
 		
 		listInvite.setModel(new DefaultListModel<Player>());
-		listPending.setModel(new DefaultListModel<Player>());
+		listPending.setModel(new DefaultListModel<Invite>());
 		
 		connection = new ConnectionToServer(playerName, this);
 		new Thread(connection).start();
@@ -115,12 +116,12 @@ public class MultiGameOptionsFrame extends JFrame {
 		return (DefaultListModel<Player>) listInvite.getModel();
 	}
 	
-	public DefaultListModel<Player> getListModelPending() {
-		return (DefaultListModel<Player>) listPending.getModel();
+	public DefaultListModel<Invite> getListModelPending() {
+		return (DefaultListModel<Invite>) listPending.getModel();
 	}
 	
-	//Use Field.CiRCLE or Field.CROSS or Field.RANDOM for yourState and anotherState
-	public void setPedningDetails(int sizeOfGameBoard, int neededFieldsForWin, int yourState, int anotherState) {
+	//Use Field.CiRCLE or Field.CROSS or Field.RANDOM for yourState and senderState
+	public void setPedningDetails(int sizeOfGameBoard, int neededFieldsForWin, int yourState, int senderState) {
 		
 	}
 	
@@ -128,7 +129,7 @@ public class MultiGameOptionsFrame extends JFrame {
 		lblPendingSizeOfBoardDetails.setText("");
 		lblPendingFIeldsNeededDetails.setText("");
 		lblPendingYouDetails.setText("");
-		lblPendingAnotherDetails.setText("");
+		lblPendingSenderDetails.setText("");
 	}
 	
 	
@@ -324,7 +325,7 @@ public class MultiGameOptionsFrame extends JFrame {
 		JScrollPane scrollPanePendingLeft = new JScrollPane();
 		splitPanePending.setLeftComponent(scrollPanePendingLeft);
 		
-		listPending = new JList<Player>();
+		listPending = new JList<Invite>();
 		listPending.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		scrollPanePendingLeft.setViewportView(listPending);
 		
@@ -345,7 +346,7 @@ public class MultiGameOptionsFrame extends JFrame {
 		
 		JLabel lblPendingYou = new JLabel("You:");
 		
-		JLabel lblPendingAnother = new JLabel("Abother:");
+		JLabel lblPendingSender = new JLabel("Sender:");
 		
 		btnPendingDecline = new JButton("Decline");
 		
@@ -353,7 +354,7 @@ public class MultiGameOptionsFrame extends JFrame {
 		
 		lblPendingFIeldsNeededDetails = new JLabel("0");
 		
-		lblPendingAnotherDetails = new JLabel("Circle");
+		lblPendingSenderDetails = new JLabel("Circle");
 		
 		lblPendingYouDetails = new JLabel("Cross");
 		GroupLayout gl_panelPendingRight = new GroupLayout(panelPendingRight);
@@ -372,18 +373,19 @@ public class MultiGameOptionsFrame extends JFrame {
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(lblPendingFIeldsNeededDetails))
 						.addGroup(gl_panelPendingRight.createSequentialGroup()
-							.addComponent(btnPendingAccept, GroupLayout.PREFERRED_SIZE, 87, GroupLayout.PREFERRED_SIZE)
+							.addGroup(gl_panelPendingRight.createParallelGroup(Alignment.LEADING)
+								.addComponent(btnPendingAccept, GroupLayout.PREFERRED_SIZE, 87, GroupLayout.PREFERRED_SIZE)
+								.addGroup(gl_panelPendingRight.createSequentialGroup()
+									.addComponent(lblPendingYou, GroupLayout.PREFERRED_SIZE, 43, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(lblPendingYouDetails))
+								.addGroup(gl_panelPendingRight.createSequentialGroup()
+									.addComponent(lblPendingSender, GroupLayout.PREFERRED_SIZE, 43, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(lblPendingSenderDetails)))
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(btnPendingDecline, GroupLayout.PREFERRED_SIZE, 87, GroupLayout.PREFERRED_SIZE))
-						.addGroup(gl_panelPendingRight.createSequentialGroup()
-							.addComponent(lblPendingYou, GroupLayout.PREFERRED_SIZE, 43, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(lblPendingYouDetails))
-						.addGroup(gl_panelPendingRight.createSequentialGroup()
-							.addComponent(lblPendingAnother, GroupLayout.PREFERRED_SIZE, 43, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(lblPendingAnotherDetails)))
-					.addContainerGap(128, Short.MAX_VALUE))
+							.addComponent(btnPendingDecline, GroupLayout.PREFERRED_SIZE, 87, GroupLayout.PREFERRED_SIZE)))
+					.addContainerGap(138, Short.MAX_VALUE))
 		);
 		gl_panelPendingRight.setVerticalGroup(
 			gl_panelPendingRight.createParallelGroup(Alignment.TRAILING)
@@ -404,8 +406,8 @@ public class MultiGameOptionsFrame extends JFrame {
 						.addComponent(lblPendingYouDetails))
 					.addGap(12)
 					.addGroup(gl_panelPendingRight.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblPendingAnother)
-						.addComponent(lblPendingAnotherDetails))
+						.addComponent(lblPendingSender)
+						.addComponent(lblPendingSenderDetails))
 					.addGap(12)
 					.addGroup(gl_panelPendingRight.createParallelGroup(Alignment.BASELINE)
 						.addComponent(btnPendingAccept)
