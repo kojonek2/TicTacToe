@@ -23,6 +23,8 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import kojonek2.tictactoe.common.ConnectionToServer;
 import kojonek2.tictactoe.common.FieldState;
@@ -121,8 +123,11 @@ public class MultiGameOptionsFrame extends JFrame {
 	}
 	
 	//Use Field.CiRCLE or Field.CROSS or Field.RANDOM for yourState and senderState
-	public void setPedningDetails(int sizeOfGameBoard, int neededFieldsForWin, int yourState, int senderState) {
-		
+	public void setPedningDetails(int sizeOfGameBoard, int neededFieldsForWin, FieldState yourState, FieldState senderState) {
+		lblPendingSizeOfBoardDetails.setText(Integer.toString(sizeOfGameBoard));
+		lblPendingFIeldsNeededDetails.setText(Integer.toString(neededFieldsForWin));
+		lblPendingYouDetails.setText(yourState.getName());
+		lblPendingSenderDetails.setText(senderState.getName());
 	}
 	
 	public void clearPendingDetails() {
@@ -140,6 +145,27 @@ public class MultiGameOptionsFrame extends JFrame {
 	private void eventsInitialization() {
 		addOnClickReactionsForRadioButtons();
 		addActionListenerInviteButton();
+		addListSelectionListeners();
+	}
+	
+	private void addListSelectionListeners() {
+		listPending.addListSelectionListener(new ListSelectionListener() {
+			
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				Invite selected = listPending.getSelectedValue();
+				if(selected == null) {
+					clearPendingDetails();
+					return;
+				}
+				
+				int sizeOfGameBoard = selected.getSizeOfGameBoard();
+				int neededFieldsForWin = selected.getFieldsNeededForWin();
+				FieldState yourState = selected.getYourState();
+				FieldState senderState = selected.getSenderState();
+				setPedningDetails(sizeOfGameBoard, neededFieldsForWin, yourState, senderState);
+			}
+		});
 	}
 	
 	private void addActionListenerInviteButton() {
@@ -150,6 +176,7 @@ public class MultiGameOptionsFrame extends JFrame {
 				return;
 			}
 			connection.sendInvite();
+			repaint();
 		});
 	}
 	

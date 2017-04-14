@@ -27,6 +27,7 @@ public class ConnectionToServer implements Runnable {
 	private DefaultListModel<Invite> modelPending;
 	
 	private List<Player> playersInLobby;
+	private List<Invite> invites;
 	
 	public ConnectionToServer(String playerName, MultiGameOptionsFrame lobbyFrame) {
 		this.playerName = playerName;
@@ -37,6 +38,7 @@ public class ConnectionToServer implements Runnable {
 		modelPending = (DefaultListModel<Invite>) lobbyFrame.getListModelPending();
 		
 		playersInLobby = new ArrayList<Player>();
+		invites = new ArrayList<Invite>();
 		
 		try {
 			serverSocket = new Socket("localhost", 4554);
@@ -85,12 +87,17 @@ public class ConnectionToServer implements Runnable {
 					modelInvite.clear();
 				} 
 				break;
+			case "Invite":
+				if(arguments[1].equals("Send")) {
+					processNewPlayerInvite(arguments);
+				}
+				break;
 			default:
 				System.out.println(input);
 		}
 	}
 	
-	synchronized void processPlayerJoinedLobby(String[] arguments, String input) {
+	synchronized private void processPlayerJoinedLobby(String[] arguments, String input) {
 		int idOfPlayer = Integer.parseInt(arguments[2]);
 		String nickOfPlayer = input.replaceFirst("Player:Add:\\d:", "");
 		
@@ -100,7 +107,7 @@ public class ConnectionToServer implements Runnable {
 		//System.out.println("Connected player id: " + idOfPlayer + " name: " + nickOfPlayer);
 	}
 	
-	synchronized void proccesPlayerLeftLobby(String[] arguments) {
+	synchronized private void proccesPlayerLeftLobby(String[] arguments) {
 		int id = Integer.parseInt(arguments[2]);
 		Player removed = null;
 		for(Player player : playersInLobby) {
@@ -117,19 +124,57 @@ public class ConnectionToServer implements Runnable {
 		playersInLobby.remove(removed);
 	}
 	
-	//invite send query always has first your state and then invited player or player who invites you
-	public void sendInvite() {
+	synchronized private void processNewPlayerInvite(String[] arguments) {
+		int idOfSender = Integer.parseInt(arguments[2]);
+		int sizeOfGameBoard = Integer.parseInt(arguments[3]);
+		int fieldsNeededForWin = Integer.parseInt(arguments[4]);
+		FieldState yourState = FieldState.fromInt(Integer.parseInt(arguments[5]));
+		FieldState senderState = FieldState.fromInt(Integer.parseInt(arguments[6]));
+		
+		Player sender = null;
+		for(Player player : playersInLobby) {
+			if(player.getIdOfConnection() == idOfSender) {
+				sender = player;
+			}
+		}
+		
+		if(sender == null) {
+			System.err.println("ConnectionToServer: processNewPlayerInvite - got invite from player who isn't in lobby");
+			return;
+		}
+		
+		removeInvitesFrom(sender);
+		
+		Invite invite = new Invite(sender, sizeOfGameBoard, fieldsNeededForWin, yourState, senderState);
+		invites.add(invite);
+		modelPending.addElement(invite);
+	}
+	
+	//invite send query always has first your state and then invited player or player who invites you state
+	synchronized public void sendInvite() {
 		String query = "Invite:Send:";
 		
 		Player player = lobbyFrame.getSelectedPlayerForInvite();
 		if(player == null) {
 			System.err.println("ConnectionToServer -- player must be selected to send invite");
 		}
+		player.setSentInvite(true);
+		
 		query += player.getIdOfConnection() + ":";
 		
 		query += lobbyFrame.getSizeOfGameBoardInput() + ":" + lobbyFrame.getFieldsNeededForWinInput() + ":";
 		query += lobbyFrame.getYourStateInput().getValue() + ":" + lobbyFrame.getInvitedStateInput().getValue();
 		
 		toSendQueue.put(query);
+	}
+	
+	synchronized private void removeInvitesFrom(Player player) {
+		Invite removed = null;
+		for(int i = invites.size() - 1; i >= 0; i--) {
+			if(invites.get(i).getSender().equals(player)) {
+				removed = invites.remove(i);
+			}
+		}
+		modelPending.removeElement(removed);
 	}
 }

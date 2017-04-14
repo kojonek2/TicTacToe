@@ -33,6 +33,10 @@ public class Invite {
 		return senderState;
 	}
 	
+	public Player getSender() {
+		return sender;
+	}
+	
 	@Override
 	public String toString() {
 		return sender.getIdOfConnection() + ": " + sender.getNick();

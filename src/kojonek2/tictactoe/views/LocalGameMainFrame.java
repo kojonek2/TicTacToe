@@ -66,8 +66,8 @@ public class LocalGameMainFrame extends JFrame {
 			gameController.setPlayerName(FieldState.CIRCLE, circlePlayerName);
 			gameController.setPlayerName(FieldState.CROSS, crossPlayerName);
 		} else if (circlePlayerName == null && crossPlayerName == null) {
-			gameController.setPlayerName(FieldState.CIRCLE, "Circle");
-			gameController.setPlayerName(FieldState.CROSS, "Cross");
+			gameController.setPlayerName(FieldState.CIRCLE, FieldState.CIRCLE.getName());
+			gameController.setPlayerName(FieldState.CROSS, FieldState.CROSS.getName());
 		} else {
 			System.err.println("MainFrame - Constructor: player1Name and player2Name must be both null or both set");
 		}
