@@ -85,7 +85,9 @@ public class ConnectionToServer implements Runnable {
 				} else if(arguments[1].equals("SendingAll")) {
 					playersInLobby.clear();
 					modelInvite.clear();
-				} 
+				} else if(arguments[1].equals("SentAll")) {
+					validateInvites();
+				}
 				break;
 			case "Invite":
 				if(arguments[1].equals("Send")) {
@@ -94,6 +96,16 @@ public class ConnectionToServer implements Runnable {
 				break;
 			default:
 				System.out.println(input);
+		}
+	}
+	
+	synchronized void validateInvites() {
+		for(int i = invites.size() - 1; i >= 0; i--) {
+			if(!playersInLobby.contains(invites.get(i).getSender())) {
+				System.err.println("ConeectionToServer: validateInvites - there was an invalid invite");
+				Invite removedInvite = invites.remove(i);
+				modelPending.removeElement(removedInvite);
+			}
 		}
 	}
 	
@@ -109,19 +121,32 @@ public class ConnectionToServer implements Runnable {
 	
 	synchronized private void proccesPlayerLeftLobby(String[] arguments) {
 		int id = Integer.parseInt(arguments[2]);
-		Player removed = null;
+		
+		Player removedPlayer = null;
 		for(Player player : playersInLobby) {
 			if(player.getIdOfConnection() == id) {
 				modelInvite.removeElement(player);
-				removed = player;
+				removedPlayer = player;
 			}
 		}
-		if(removed == null) {
+		
+		if(removedPlayer == null) {
 			System.err.println("ConnectionToServer - Tried to remove player from lobby who wasn't in lobby");
 			toSendQueue.put("Player:GetAll"); //refreshing player list
 			return;
 		}
-		playersInLobby.remove(removed);
+		playersInLobby.remove(removedPlayer);
+		
+		removeInviteFrom(removedPlayer);
+	}
+	
+	synchronized void removeInviteFrom(Player removedPlayer) {
+		for(int i = invites.size() - 1; i >= 0; i--) {
+			if(invites.get(i).getSender().equals(removedPlayer)) {
+				Invite removedInvite = invites.remove(i);
+				modelPending.removeElement(removedInvite);
+			}
+		}
 	}
 	
 	synchronized private void processNewPlayerInvite(String[] arguments) {
