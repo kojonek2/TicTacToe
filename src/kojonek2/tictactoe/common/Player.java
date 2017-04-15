@@ -4,31 +4,32 @@ public class Player {
 	
 	private String nick;
 	private int idOfConnection;
-	private boolean sentInvite;
+	private InviteState inviteState;
 	
 	public Player(int idOfConnection, String nick) {
 		this.idOfConnection = idOfConnection;
 		this.nick = nick;
-		sentInvite = false;
+		inviteState = InviteState.NOT_SENT;
 	}
 	
-	int getIdOfConnection() {
+	public int getIdOfConnection() {
 		return idOfConnection;
 	}
 	
-	String getNick() {
+	public String getNick() {
 		return nick;
 	}
 	
-	void setSentInvite(boolean b) {
-		sentInvite = b;
+	synchronized public void setInviteState(InviteState state) {
+		inviteState = state;
+	}
+	
+	synchronized public InviteState getInviteState() {
+		return inviteState;
 	}
 	
 	@Override
 	public String toString() {
-		if(sentInvite) {
-			return idOfConnection + ": " + nick + " | Wysłano";
-		}
-		return idOfConnection + ": " + nick;
+		return idOfConnection + ": " + nick + " " + inviteState.getDescription();
 	}
 }

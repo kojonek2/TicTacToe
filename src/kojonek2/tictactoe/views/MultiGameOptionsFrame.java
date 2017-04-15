@@ -29,6 +29,7 @@ import javax.swing.event.ListSelectionListener;
 import kojonek2.tictactoe.common.ConnectionToServer;
 import kojonek2.tictactoe.common.FieldState;
 import kojonek2.tictactoe.common.Invite;
+import kojonek2.tictactoe.common.InviteState;
 import kojonek2.tictactoe.common.Player;
 
 @SuppressWarnings("serial")
@@ -53,6 +54,7 @@ public class MultiGameOptionsFrame extends JFrame {
 	private JSpinner spnInviteFieldNeeded;
 	
 	private JButton btnInvite;
+	private JButton btnCancelInvite;
 
 	private JButton btnPendingAccept;
 	private JButton btnPendingDecline;
@@ -144,7 +146,7 @@ public class MultiGameOptionsFrame extends JFrame {
 	 */
 	private void eventsInitialization() {
 		addOnClickReactionsForRadioButtons();
-		addActionListenerInviteButton();
+		addActionListenerInviteButtons();
 		addListSelectionListeners();
 	}
 	
@@ -168,15 +170,34 @@ public class MultiGameOptionsFrame extends JFrame {
 		});
 	}
 	
-	private void addActionListenerInviteButton() {
+	private void addActionListenerInviteButtons() {
 		btnInvite.addActionListener((e) -> {
 			if(listInvite.isSelectionEmpty()) {
 				Toolkit.getDefaultToolkit().beep();
-				JOptionPane.showMessageDialog(this, "You need to choose player to invite", "Warning", JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(this, "You need to choose player to invite!", "Warning", JOptionPane.WARNING_MESSAGE);
 				return;
 			}
 			connection.sendInvite();
+			listInvite.clearSelection();
 			repaint();
+		});
+		
+		btnCancelInvite.addActionListener((e) -> {
+			if(listInvite.isSelectionEmpty()) {
+				Toolkit.getDefaultToolkit().beep();
+				JOptionPane.showMessageDialog(this, "You need to choose whose invite you want to cancel!", "Warning", JOptionPane.WARNING_MESSAGE);
+				return;
+			}
+			
+			Player selectedPlayer = listInvite.getSelectedValue();
+			if(selectedPlayer.getInviteState() != InviteState.SENT) {
+				Toolkit.getDefaultToolkit().beep();
+				JOptionPane.showMessageDialog(this, "This player doesn't have pending invite!", "Warning", JOptionPane.WARNING_MESSAGE);
+				return;
+			}
+			
+			connection.cancelInviteFrom(selectedPlayer);
+			listInvite.clearSelection();
 		});
 	}
 	
@@ -261,6 +282,8 @@ public class MultiGameOptionsFrame extends JFrame {
 		
 		JLabel lblInviteChoosePlayerFrom = new JLabel("Choose game options and invite player!");
 		lblInviteChoosePlayerFrom.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		
+		btnCancelInvite = new JButton("Cancel Invite");
 		GroupLayout gl_panelInviteRight = new GroupLayout(panelInviteRight);
 		gl_panelInviteRight.setHorizontalGroup(
 			gl_panelInviteRight.createParallelGroup(Alignment.LEADING)
@@ -276,7 +299,10 @@ public class MultiGameOptionsFrame extends JFrame {
 							.addComponent(lblInviteFIeldsNeeded, GroupLayout.PREFERRED_SIZE, 138, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(spnInviteFieldNeeded, GroupLayout.PREFERRED_SIZE, 65, GroupLayout.PREFERRED_SIZE))
-						.addComponent(btnInvite, GroupLayout.PREFERRED_SIZE, 87, GroupLayout.PREFERRED_SIZE)
+						.addGroup(gl_panelInviteRight.createSequentialGroup()
+							.addComponent(btnInvite, GroupLayout.PREFERRED_SIZE, 87, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(btnCancelInvite))
 						.addGroup(gl_panelInviteRight.createSequentialGroup()
 							.addGroup(gl_panelInviteRight.createParallelGroup(Alignment.LEADING)
 								.addComponent(lblInviteYou, GroupLayout.PREFERRED_SIZE, 43, GroupLayout.PREFERRED_SIZE)
@@ -324,7 +350,9 @@ public class MultiGameOptionsFrame extends JFrame {
 								.addComponent(rbInviteCrossAnother)
 								.addComponent(rbInviteRandomAnother))
 							.addPreferredGap(ComponentPlacement.UNRELATED)))
-					.addComponent(btnInvite)
+					.addGroup(gl_panelInviteRight.createParallelGroup(Alignment.BASELINE)
+						.addComponent(btnInvite)
+						.addComponent(btnCancelInvite))
 					.addGap(42))
 		);
 		panelInviteRight.setLayout(gl_panelInviteRight);
@@ -400,19 +428,18 @@ public class MultiGameOptionsFrame extends JFrame {
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(lblPendingFIeldsNeededDetails))
 						.addGroup(gl_panelPendingRight.createSequentialGroup()
-							.addGroup(gl_panelPendingRight.createParallelGroup(Alignment.LEADING)
-								.addComponent(btnPendingAccept, GroupLayout.PREFERRED_SIZE, 87, GroupLayout.PREFERRED_SIZE)
-								.addGroup(gl_panelPendingRight.createSequentialGroup()
-									.addComponent(lblPendingYou, GroupLayout.PREFERRED_SIZE, 43, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(lblPendingYouDetails))
-								.addGroup(gl_panelPendingRight.createSequentialGroup()
-									.addComponent(lblPendingSender, GroupLayout.PREFERRED_SIZE, 43, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(lblPendingSenderDetails)))
+							.addComponent(btnPendingAccept, GroupLayout.PREFERRED_SIZE, 87, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(btnPendingDecline, GroupLayout.PREFERRED_SIZE, 87, GroupLayout.PREFERRED_SIZE))
+						.addGroup(gl_panelPendingRight.createSequentialGroup()
+							.addComponent(lblPendingYou, GroupLayout.PREFERRED_SIZE, 43, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(btnPendingDecline, GroupLayout.PREFERRED_SIZE, 87, GroupLayout.PREFERRED_SIZE)))
-					.addContainerGap(138, Short.MAX_VALUE))
+							.addComponent(lblPendingYouDetails))
+						.addGroup(gl_panelPendingRight.createSequentialGroup()
+							.addComponent(lblPendingSender, GroupLayout.PREFERRED_SIZE, 43, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(lblPendingSenderDetails)))
+					.addContainerGap(134, Short.MAX_VALUE))
 		);
 		gl_panelPendingRight.setVerticalGroup(
 			gl_panelPendingRight.createParallelGroup(Alignment.TRAILING)

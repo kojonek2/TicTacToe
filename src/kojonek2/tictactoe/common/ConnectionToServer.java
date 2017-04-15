@@ -92,6 +92,8 @@ public class ConnectionToServer implements Runnable {
 			case "Invite":
 				if(arguments[1].equals("Send")) {
 					processNewPlayerInvite(arguments);
+				} else if(arguments[1].equals("Cancel")) {
+					processInviteCancellation(arguments);
 				}
 				break;
 			default:
@@ -120,33 +122,19 @@ public class ConnectionToServer implements Runnable {
 	}
 	
 	synchronized private void proccesPlayerLeftLobby(String[] arguments) {
-		int id = Integer.parseInt(arguments[2]);
+		int idOfPlayer = Integer.parseInt(arguments[2]);
 		
-		Player removedPlayer = null;
-		for(Player player : playersInLobby) {
-			if(player.getIdOfConnection() == id) {
-				modelInvite.removeElement(player);
-				removedPlayer = player;
-			}
-		}
-		
+		Player removedPlayer = getPlayer(idOfPlayer);
 		if(removedPlayer == null) {
 			System.err.println("ConnectionToServer - Tried to remove player from lobby who wasn't in lobby");
 			toSendQueue.put("Player:GetAll"); //refreshing player list
 			return;
 		}
+		
+		modelInvite.removeElement(removedPlayer);
 		playersInLobby.remove(removedPlayer);
 		
 		removeInviteFrom(removedPlayer);
-	}
-	
-	synchronized void removeInviteFrom(Player removedPlayer) {
-		for(int i = invites.size() - 1; i >= 0; i--) {
-			if(invites.get(i).getSender().equals(removedPlayer)) {
-				Invite removedInvite = invites.remove(i);
-				modelPending.removeElement(removedInvite);
-			}
-		}
 	}
 	
 	synchronized private void processNewPlayerInvite(String[] arguments) {
@@ -156,23 +144,27 @@ public class ConnectionToServer implements Runnable {
 		FieldState yourState = FieldState.fromInt(Integer.parseInt(arguments[5]));
 		FieldState senderState = FieldState.fromInt(Integer.parseInt(arguments[6]));
 		
-		Player sender = null;
-		for(Player player : playersInLobby) {
-			if(player.getIdOfConnection() == idOfSender) {
-				sender = player;
-			}
-		}
+		Player sender = getPlayer(idOfSender);
 		
 		if(sender == null) {
 			System.err.println("ConnectionToServer: processNewPlayerInvite - got invite from player who isn't in lobby");
 			return;
 		}
 		
-		removeInvitesFrom(sender);
+		removeInviteFrom(sender);
 		
 		Invite invite = new Invite(sender, sizeOfGameBoard, fieldsNeededForWin, yourState, senderState);
 		invites.add(invite);
 		modelPending.addElement(invite);
+	}
+	
+	synchronized private void processInviteCancellation(String[] arguments) {
+		int idOfCancellingPlayer = Integer.parseInt(arguments[2]);
+		Player player = getPlayer(idOfCancellingPlayer);
+		if(player == null) {
+			System.err.println("ConnectionToServer:processInviteCancellation - error");
+		}
+		removeInviteFrom(player);
 	}
 	
 	//invite send query always has first your state and then invited player or player who invites you state
@@ -183,7 +175,7 @@ public class ConnectionToServer implements Runnable {
 		if(player == null) {
 			System.err.println("ConnectionToServer -- player must be selected to send invite");
 		}
-		player.setSentInvite(true);
+		player.setInviteState(InviteState.SENT);
 		
 		query += player.getIdOfConnection() + ":";
 		
@@ -193,13 +185,30 @@ public class ConnectionToServer implements Runnable {
 		toSendQueue.put(query);
 	}
 	
-	synchronized private void removeInvitesFrom(Player player) {
+	synchronized private void removeInviteFrom(Player player) {
 		Invite removed = null;
 		for(int i = invites.size() - 1; i >= 0; i--) {
 			if(invites.get(i).getSender().equals(player)) {
 				removed = invites.remove(i);
 			}
 		}
+		if(removed == null) {
+			return;
+		}
 		modelPending.removeElement(removed);
+	}
+	
+	synchronized Player getPlayer(int idOfPlayer) {
+		for(Player player : playersInLobby) {
+			if(player.getIdOfConnection() == idOfPlayer) {
+				return player;
+			}
+		}
+		return null;
+	}
+	
+	public void cancelInviteFrom(Player player) {
+		player.setInviteState(InviteState.CANCELED);
+		toSendQueue.put("Invite:Cancel:" + player.getIdOfConnection());
 	}
 }
