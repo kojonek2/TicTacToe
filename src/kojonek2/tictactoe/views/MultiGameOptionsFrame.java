@@ -211,6 +211,15 @@ public class MultiGameOptionsFrame extends JFrame {
 			}
 			connection.declineInvite(listPending.getSelectedValue());
 		});
+		
+		btnPendingAccept.addActionListener((e) -> {
+			if(listPending.isSelectionEmpty()) {
+				Toolkit.getDefaultToolkit().beep();
+				JOptionPane.showMessageDialog(this, "You need to choose which invite you want to accept!", "Warning", JOptionPane.WARNING_MESSAGE);
+				return;
+			}
+			connection.acceptInvite(listPending.getSelectedValue());
+		});
 	}
 	
 	private void addOnClickReactionsForRadioButtons() {

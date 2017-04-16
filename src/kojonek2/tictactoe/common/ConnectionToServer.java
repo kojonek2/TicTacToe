@@ -1,5 +1,6 @@
 package kojonek2.tictactoe.common;
 
+import java.awt.Toolkit;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -8,8 +9,11 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 import kojonek2.tictactoe.views.MultiGameOptionsFrame;
+import kojonek2.tictactoe.views.WelcomeFrame;
 
 public class ConnectionToServer implements Runnable {
 
@@ -46,6 +50,13 @@ public class ConnectionToServer implements Runnable {
 		} catch (IOException e) {
 			System.err.println("Error during establishing connection!");
 			e.printStackTrace();
+			SwingUtilities.invokeLater(() -> {
+				Toolkit.getDefaultToolkit().beep();
+				JOptionPane.showMessageDialog(lobbyFrame, "Cannot establish connection with server!", "Error", JOptionPane.ERROR_MESSAGE);
+				WelcomeFrame welcomeFrame = new WelcomeFrame();
+				welcomeFrame.setVisible(true);
+				lobbyFrame.dispose();
+			});
 		}
 		
 		toSendQueue = new WritingQueue();
@@ -96,6 +107,8 @@ public class ConnectionToServer implements Runnable {
 					processInviteCancellation(arguments);
 				} else if(arguments[1].equals("Decline")) {
 					processInviteDeclination(arguments);
+				} else if(arguments[1].equals("RejectAcceptance")) {
+					lobbyFrame.setVisible(true);
 				}
 				break;
 			default:
@@ -227,6 +240,16 @@ public class ConnectionToServer implements Runnable {
 		query += invite.getSizeOfGameBoard() + ":" + invite.getFieldsNeededForWin() + ":";
 		query += invite.getYourState().getValue() + ":" + invite.getSenderState().getValue();
 		toSendQueue.put(query);
+	}
+	
+	synchronized public void acceptInvite(Invite invite) {
+		modelPending.removeElement(invite);
+		invites.remove(invite);
+		String query = "Invite:Accept:" + invite.getSender().getIdOfConnection() + ":";
+		query += invite.getSizeOfGameBoard() + ":" + invite.getFieldsNeededForWin() + ":";
+		query += invite.getYourState().getValue() + ":" + invite.getSenderState().getValue();
+		toSendQueue.put(query);
+		lobbyFrame.setVisible(false);
 	}
 	
 	public void cancelInviteFrom(Player player) {
