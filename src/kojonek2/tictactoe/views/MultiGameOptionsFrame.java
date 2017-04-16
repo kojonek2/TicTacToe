@@ -147,6 +147,7 @@ public class MultiGameOptionsFrame extends JFrame {
 	private void eventsInitialization() {
 		addOnClickReactionsForRadioButtons();
 		addActionListenerInviteButtons();
+		addActionListenerPendingButtons();
 		addListSelectionListeners();
 	}
 	
@@ -198,6 +199,17 @@ public class MultiGameOptionsFrame extends JFrame {
 			
 			connection.cancelInviteFrom(selectedPlayer);
 			listInvite.clearSelection();
+		});
+	}
+	
+	private void addActionListenerPendingButtons() {
+		btnPendingDecline.addActionListener((e) -> {
+			if(listPending.isSelectionEmpty()) {
+				Toolkit.getDefaultToolkit().beep();
+				JOptionPane.showMessageDialog(this, "You need to choose which invite you want to decline!", "Warning", JOptionPane.WARNING_MESSAGE);
+				return;
+			}
+			connection.declineInvite(listPending.getSelectedValue());
 		});
 	}
 	

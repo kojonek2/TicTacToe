@@ -94,6 +94,8 @@ public class ConnectionToServer implements Runnable {
 					processNewPlayerInvite(arguments);
 				} else if(arguments[1].equals("Cancel")) {
 					processInviteCancellation(arguments);
+				} else if(arguments[1].equals("Decline")) {
+					processInviteDeclination(arguments);
 				}
 				break;
 			default:
@@ -198,6 +200,17 @@ public class ConnectionToServer implements Runnable {
 		modelPending.removeElement(removed);
 	}
 	
+	synchronized void processInviteDeclination(String[] arguments) {
+		int idOfDecliner = Integer.parseInt(arguments[2]);
+		Player decliner = getPlayer(idOfDecliner);
+		if(decliner == null) {
+			//already disconnected from lobby
+			return;
+		}
+		decliner.setInviteState(InviteState.DECLINED);
+		lobbyFrame.repaint();
+	}
+	
 	synchronized Player getPlayer(int idOfPlayer) {
 		for(Player player : playersInLobby) {
 			if(player.getIdOfConnection() == idOfPlayer) {
@@ -207,8 +220,19 @@ public class ConnectionToServer implements Runnable {
 		return null;
 	}
 	
+	synchronized public void declineInvite(Invite invite) {
+		modelPending.removeElement(invite);
+		invites.remove(invite);
+		String query = "Invite:Decline:" + invite.getSender().getIdOfConnection() + ":";
+		query += invite.getSizeOfGameBoard() + ":" + invite.getFieldsNeededForWin() + ":";
+		query += invite.getYourState().getValue() + ":" + invite.getSenderState().getValue();
+		toSendQueue.put(query);
+	}
+	
 	public void cancelInviteFrom(Player player) {
 		player.setInviteState(InviteState.CANCELED);
 		toSendQueue.put("Invite:Cancel:" + player.getIdOfConnection());
 	}
+	
+
 }
