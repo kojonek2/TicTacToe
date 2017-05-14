@@ -12,6 +12,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import kojonek2.tictactoe.views.MultiGameMainFrame;
 import kojonek2.tictactoe.views.MultiGameOptionsFrame;
 import kojonek2.tictactoe.views.WelcomeFrame;
 
@@ -109,6 +110,14 @@ public class ConnectionToServer implements Runnable {
 					processInviteDeclination(arguments);
 				} else if(arguments[1].equals("RejectAcceptance")) {
 					lobbyFrame.setVisible(true);
+				}
+				break;
+			case "Game":
+				if(input.equals("Game:Start")) {
+					lobbyFrame.setVisible(false);
+					new MultiGameMainFrame().setVisible(true);
+				} else {
+					//TODO: handle communication with server during game
 				}
 				break;
 			default:

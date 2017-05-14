@@ -9,9 +9,9 @@ public class Field {
 	private int x;
 	private int y;
 	
-	private LocalGameController gameController;
+	private GameController gameController;
 
-	public Field(LocalGameController gameController, int x, int y) {
+	public Field(GameController gameController, int x, int y) {
 		this.x = x;
 		this.y = y;
 		this.gameController = gameController;

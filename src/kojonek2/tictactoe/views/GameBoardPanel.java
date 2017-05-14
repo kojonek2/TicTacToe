@@ -11,50 +11,51 @@ import java.awt.event.MouseListener;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 
 import kojonek2.tictactoe.common.Field;
 import kojonek2.tictactoe.common.FieldState;
 import kojonek2.tictactoe.common.LocalGameController;
 
 @SuppressWarnings("serial")
-public class GameLocalBoardPanel extends JPanel implements ComponentListener, MouseListener {
+public abstract class GameBoardPanel extends JPanel implements ComponentListener, MouseListener {
 
 	private JLabel informationLabel;
 	
 	private Field startedDragAtField = null;
 	
-	private LocalGameController localGame;
+	private LocalGameController gameController;
 
 	/**
 	 * Create game Board
 	 */
-	public GameLocalBoardPanel(JLabel jLabel, int sizeOfBoard, int fieldsNeededForWin) {
+	public GameBoardPanel() {
 		super();
-		
-		this.informationLabel = jLabel;
-		
-		localGame = new LocalGameController(this, sizeOfBoard, fieldsNeededForWin);
 		
 		addComponentListener(this);
 		addMouseListener(this);
 	}
 	
-	public LocalGameController getGameController() {
-		return localGame;
+	public abstract void updateInformationLabel();
+	
+	public void createGameController(int sizeOfBoard, int fieldsNeededForWin) {
+		this.gameController = new LocalGameController(this, sizeOfBoard, fieldsNeededForWin);
 	}
-
-	public void updateInformationLabel() {
-		FieldState playerTurn = localGame.getPlayerTurn();
-		if (playerTurn == FieldState.CROSS) {
-			SwingUtilities.invokeLater(() -> informationLabel.setText("Turn: " + localGame.getCrossPlayerName()));
-		} else if (playerTurn == FieldState.CIRCLE) {
-			SwingUtilities.invokeLater(() -> informationLabel.setText("Turn: " + localGame.getCirclePlayerName()));
-		} else {
-			SwingUtilities.invokeLater(() -> informationLabel.setText("Error"));
+	
+	public void setInformationLabel(JLabel informationLabel) {
+		if(informationLabel == null) {
+			System.err.println("GameBoardPannel:setinformationLablel - label is null");
 		}
+		this.informationLabel = informationLabel;
 	}
-
+	
+	public JLabel getInformationLabel() {
+		return informationLabel;
+	}
+	
+	public LocalGameController getGameController() {
+		return gameController;
+	}
+	
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
@@ -63,13 +64,13 @@ public class GameLocalBoardPanel extends JPanel implements ComponentListener, Mo
 		// this is there because window builder showed divided by 0 error
 		/////////////////////////////////////////////////////////////////////////////////
 		
-		if (localGame.getField(0, 0) == null) {
+		if (gameController.getField(0, 0) == null) {
 			System.err.println("GameBoardPanel - paintComponent: this is only for window builder purpose");
 			return;
 		}
 		////////////////////////////////////////////////////////////////////////////////////
 
-		int sizeOfGameBoard = localGame.getSizeOfGameBoard();
+		int sizeOfGameBoard = gameController.getSizeOfGameBoard();
 		int width = getWidth();
 		int height = getHeight();
 		
@@ -89,9 +90,9 @@ public class GameLocalBoardPanel extends JPanel implements ComponentListener, Mo
 
 	private void drawImageOfField(Graphics2D g2d, int column, int row) {
 		Image imgCross = Toolkit.getDefaultToolkit()
-				.getImage(GameLocalBoardPanel.class.getResource("/kojonek2/tictactoe/resources/cross_512.png"));
+				.getImage(LocalGameBoardPanel.class.getResource("/kojonek2/tictactoe/resources/cross_512.png"));
 		Image imgCircle = Toolkit.getDefaultToolkit()
-				.getImage(GameLocalBoardPanel.class.getResource("/kojonek2/tictactoe/resources/circle_512.png"));
+				.getImage(LocalGameBoardPanel.class.getResource("/kojonek2/tictactoe/resources/circle_512.png"));
 
 		int offsetFromCorner = (int) (0.05 * Field.lengthOfSide);
 		int dx1 = column * Field.lengthOfSide + offsetFromCorner;
@@ -103,15 +104,15 @@ public class GameLocalBoardPanel extends JPanel implements ComponentListener, Mo
 		int sy1 = 0;
 		int sy2 = 512;
 
-		if (localGame.getField(column, row).getState() == FieldState.CIRCLE) {
+		if (gameController.getField(column, row).getState() == FieldState.CIRCLE) {
 			g2d.drawImage(imgCircle, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, this);
-		} else if (localGame.getField(column, row).getState() == FieldState.CROSS) {
+		} else if (gameController.getField(column, row).getState() == FieldState.CROSS) {
 			g2d.drawImage(imgCross, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, this);
 		}
 	}
 
 	private void drawLinesOfField(Graphics2D g2d, int column, int row) {
-		int sizeOfGameBoard = localGame.getSizeOfGameBoard();
+		int sizeOfGameBoard = gameController.getSizeOfGameBoard();
 		
 		if (column < sizeOfGameBoard - 1) {
 			drawVerticalLine(g2d, column, row);
@@ -123,7 +124,7 @@ public class GameLocalBoardPanel extends JPanel implements ComponentListener, Mo
 
 	private void drawVerticalLine(Graphics2D g2d, int column, int row) {
 		Image imgLineVertical = Toolkit.getDefaultToolkit()
-				.getImage(GameLocalBoardPanel.class.getResource("/kojonek2/tictactoe/resources/line_vertical_512.png"));
+				.getImage(LocalGameBoardPanel.class.getResource("/kojonek2/tictactoe/resources/line_vertical_512.png"));
 
 		int offsetFromCorner = (int) (0.1 * Field.lengthOfSide);
 		int dx1 = column * Field.lengthOfSide + Field.lengthOfSide / 2 + offsetFromCorner;
@@ -140,7 +141,7 @@ public class GameLocalBoardPanel extends JPanel implements ComponentListener, Mo
 
 	private void drawHorizontalLine(Graphics2D g2d, int column, int row) {
 		Image imgLineHorizontal = Toolkit.getDefaultToolkit()
-				.getImage(GameLocalBoardPanel.class.getResource("/kojonek2/tictactoe/resources/line_horizontal_512.png"));
+				.getImage(LocalGameBoardPanel.class.getResource("/kojonek2/tictactoe/resources/line_horizontal_512.png"));
 
 		int offsetFromCorner = (int) (0.1 * Field.lengthOfSide);
 		int dx1 = column * Field.lengthOfSide;
@@ -162,11 +163,11 @@ public class GameLocalBoardPanel extends JPanel implements ComponentListener, Mo
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		if (localGame.getGameEnded()) {
+		if (gameController.getGameEnded()) {
 			return;
 		}
 
-		int sizeOfGameBoard = localGame.getSizeOfGameBoard();
+		int sizeOfGameBoard = gameController.getSizeOfGameBoard();
 		int xOfInteractedField = e.getX() / Field.lengthOfSide;
 		int yOfInteractedField = e.getY() / Field.lengthOfSide;
 
@@ -175,7 +176,7 @@ public class GameLocalBoardPanel extends JPanel implements ComponentListener, Mo
 			return;
 		}
 
-		startedDragAtField = localGame.getField(xOfInteractedField, yOfInteractedField);
+		startedDragAtField = gameController.getField(xOfInteractedField, yOfInteractedField);
 	}
 
 	@Override
@@ -184,7 +185,7 @@ public class GameLocalBoardPanel extends JPanel implements ComponentListener, Mo
 			return;
 		}
 
-		int sizeOfGameBoard = localGame.getSizeOfGameBoard();
+		int sizeOfGameBoard = gameController.getSizeOfGameBoard();
 		int xOfInteractedField = e.getX() / Field.lengthOfSide;
 		int yOfInteractedField = e.getY() / Field.lengthOfSide;
 
@@ -194,9 +195,9 @@ public class GameLocalBoardPanel extends JPanel implements ComponentListener, Mo
 			return;
 		}
 
-		Field field = localGame.getField(xOfInteractedField, yOfInteractedField);
+		Field field = gameController.getField(xOfInteractedField, yOfInteractedField);
 		if (field == startedDragAtField) {
-			localGame.fieldClicked(startedDragAtField);
+			gameController.fieldClicked(startedDragAtField);
 			return;
 		}
 

@@ -9,61 +9,22 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import kojonek2.tictactoe.views.GameLocalBoardPanel;
+import kojonek2.tictactoe.views.GameBoardPanel;
 import kojonek2.tictactoe.views.WinnerAnnouncer;
 
-public class LocalGameController {
-	
-	private GameLocalBoardPanel gameBoardPanel;
-
-	private int sizeOfGameBoard;
-	private int fieldsNeededForWin;
-	
-	//initialization for window builder
-	private Field[][] gameBoard = new Field[0][0];
+public class LocalGameController extends GameController {
 	
 	private boolean randomPlayerSwaps = false;
-	private boolean gameEnded = false;
-
-	private FieldState playerTurn = FieldState.BLANK;
-	
-	private String crossPlayerName;
-	private String circlePlayerName;
 
 	/**
 	 * Create game Board
 	 */
-	public LocalGameController(GameLocalBoardPanel gameBoardPanel, int sizeOfBoard, int fieldsNeededForWin) {
-		
-		this.gameBoardPanel = gameBoardPanel;
-		this.sizeOfGameBoard = sizeOfBoard;
-		this.fieldsNeededForWin = fieldsNeededForWin;
-
-		createGameBoard(sizeOfBoard);
+	public LocalGameController(GameBoardPanel gameBoardPanel, int sizeOfBoard, int fieldsNeededForWin) {
+		super(gameBoardPanel, sizeOfBoard, fieldsNeededForWin);
 	}
 
 	public void setRandomPlayerSwaps(boolean b) {
 		randomPlayerSwaps = b;
-	}
-
-	/**
-	 * Sets player name.
-	 * 
-	 * @param playerFieldStatus
-	 *            pass if player is playing as Field.CIRCLE or Field.CROSS
-	 * @param name
-	 *            player's name
-	 */
-	public void setPlayerName(FieldState playerFieldStatus, String name) {
-		if (playerFieldStatus == FieldState.CIRCLE) {
-			circlePlayerName = name;
-			return;
-		}
-		if (playerFieldStatus == FieldState.CROSS) {
-			crossPlayerName = name;
-			return;
-		}
-		System.err.println("LocalGameController - setPlayerName: passed wrong playerFieldStatus");
 	}
 
 	public void swapPlayers() {
@@ -72,34 +33,6 @@ public class LocalGameController {
 			crossPlayerName = circlePlayerName;
 			circlePlayerName = temp;
 		}
-	}
-	
-	public boolean getGameEnded() {
-		return gameEnded;
-	}
-	
-	public String getCrossPlayerName() {
-		return crossPlayerName;
-	}
-	
-	public String getCirclePlayerName() {
-		return circlePlayerName;
-	}
-
-	public int getSizeOfGameBoard() {
-		return sizeOfGameBoard;
-	}
-
-	public Field getField(int x, int y) {
-		//check for window builder
-		if(gameBoard.length == 0) {
-			return null;
-		}
-		return gameBoard[x][y];
-	}
-	
-	public FieldState getPlayerTurn() {
-		return playerTurn;
 	}
 	
 	public void fieldClicked(Field clickedField) {
@@ -163,54 +96,6 @@ public class LocalGameController {
 		gameBoardPanel.updateInformationLabel();
 	}
 
-	private void createGameBoard(int sizeOfGameBoard) {
-		gameBoard = new Field[sizeOfGameBoard][sizeOfGameBoard];
-		for (int x = 0; x < sizeOfGameBoard; x++) {
-			for (int y = 0; y < sizeOfGameBoard; y++) {
-				gameBoard[x][y] = new Field(this, x, y);
-			}
-		}
-	}
-
-	private FieldState findWinner() {
-		for (int x = 0; x < gameBoard.length; x++) {
-			for (int y = 0; y < gameBoard[x].length; y++) {
-
-				Field field = gameBoard[x][y];
-				FieldState stateOfField = field.getState();
-				if (stateOfField == FieldState.CIRCLE) {
-					if (isFieldCreatingWinningRow(FieldState.CIRCLE, x, y)) {
-						return FieldState.CIRCLE;
-					}
-				} else if (stateOfField == FieldState.CROSS) {
-					if (isFieldCreatingWinningRow(FieldState.CROSS, x, y)) {
-						return FieldState.CROSS;
-					}
-				}
-
-			}
-		}
-		return FieldState.BLANK;
-	}
-
-	private boolean isFieldCreatingWinningRow(FieldState stateOfField, int x, int y) {
-		for (int i = -1; i <= 1; i++) {
-			for (int j = -1; j <= 1; j++) {
-
-				// don't check this same spot (always generates true when i == 0
-				// and j == 0)
-				if (!(i == 0 && j == 0)) {
-					boolean result = gameBoard[x][y].isWinningField(stateOfField, fieldsNeededForWin, i, j);
-					if (result) {
-						return true;
-					}
-				}
-
-			}
-		}
-		return false;
-	}
-
 	private void announceWinner(FieldState winner) {
 		String winnerName = "";
 		if (winner == FieldState.CROSS) {
@@ -226,18 +111,6 @@ public class LocalGameController {
 		JDialog dialog = new WinnerAnnouncer(this, winnerName);
 		dialog.setVisible(true);
 		gameEnded = true;
-	}
-
-	private int getNumberOfBlankField() {
-		int result = 0;
-		for (Field[] array : gameBoard) {
-			for (Field field : array) {
-				if (field.getState() == FieldState.BLANK) {
-					result++;
-				}
-			}
-		}
-		return result;
 	}
 
 	public String saveGame() throws JSONException {

@@ -63,6 +63,12 @@ public class LocalGameOptionsFrame extends JFrame {
 			JOptionPane.showMessageDialog(this, "Inputs can't be blank.");
 			return;
 		}
+		
+		if((int) spnSizeOfBoard.getValue() < (int) spnFieldNeededForWin.getValue()) {
+			Toolkit.getDefaultToolkit().beep();
+			JOptionPane.showMessageDialog(this, "Value of \"Fields in row needed for win\" can't be bigger than \"Size of game board\"");
+			return;
+		}
 
 		LocalGameMainFrame mainFrame;
 		if (chboxNoNames.isSelected()) {
