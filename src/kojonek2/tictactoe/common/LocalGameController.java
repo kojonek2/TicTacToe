@@ -15,6 +15,9 @@ import kojonek2.tictactoe.views.WinnerAnnouncer;
 public class LocalGameController extends GameController {
 	
 	private boolean randomPlayerSwaps = false;
+	
+	private String crossPlayerName;
+	private String circlePlayerName;
 
 	/**
 	 * Create game Board
@@ -27,6 +30,34 @@ public class LocalGameController extends GameController {
 		randomPlayerSwaps = b;
 	}
 
+	/**
+	 * Sets player name.
+	 * 
+	 * @param playerFieldStatus
+	 *            pass if player is playing as Field.CIRCLE or Field.CROSS
+	 * @param name
+	 *            player's name
+	 */
+	public void setPlayerName(FieldState playerFieldStatus, String name) {
+		if (playerFieldStatus == FieldState.CIRCLE) {
+			circlePlayerName = name;
+			return;
+		}
+		if (playerFieldStatus == FieldState.CROSS) {
+			crossPlayerName = name;
+			return;
+		}
+		System.err.println("LocalGameController - setPlayerName: passed wrong playerFieldStatus");
+	}
+	
+	public String getCrossPlayerName() {
+		return crossPlayerName;
+	}
+	
+	public String getCirclePlayerName() {
+		return circlePlayerName;
+	}
+	
 	public void swapPlayers() {
 		if (crossPlayerName != null && circlePlayerName != null) {
 			String temp = crossPlayerName;
@@ -35,6 +66,7 @@ public class LocalGameController extends GameController {
 		}
 	}
 	
+	@Override
 	public void fieldClicked(Field clickedField) {
 
 		// do something only if clicked on blank field

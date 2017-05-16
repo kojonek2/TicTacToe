@@ -14,9 +14,6 @@ public abstract class GameController {
 	protected boolean gameEnded = false;
 
 	protected FieldState playerTurn = FieldState.BLANK;
-	
-	protected String crossPlayerName;
-	protected String circlePlayerName;
 
 	/**
 	 * Create game Board
@@ -31,37 +28,9 @@ public abstract class GameController {
 	}
 
 	public abstract void fieldClicked(Field clickedField);
-	
-	/**
-	 * Sets player name.
-	 * 
-	 * @param playerFieldStatus
-	 *            pass if player is playing as Field.CIRCLE or Field.CROSS
-	 * @param name
-	 *            player's name
-	 */
-	public void setPlayerName(FieldState playerFieldStatus, String name) {
-		if (playerFieldStatus == FieldState.CIRCLE) {
-			circlePlayerName = name;
-			return;
-		}
-		if (playerFieldStatus == FieldState.CROSS) {
-			crossPlayerName = name;
-			return;
-		}
-		System.err.println("LocalGameController - setPlayerName: passed wrong playerFieldStatus");
-	}
 
 	public boolean getGameEnded() {
 		return gameEnded;
-	}
-	
-	public String getCrossPlayerName() {
-		return crossPlayerName;
-	}
-	
-	public String getCirclePlayerName() {
-		return circlePlayerName;
 	}
 
 	public int getSizeOfGameBoard() {

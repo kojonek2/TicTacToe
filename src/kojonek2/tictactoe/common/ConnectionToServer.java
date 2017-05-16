@@ -21,6 +21,8 @@ public class ConnectionToServer implements Runnable {
 	private Socket serverSocket;
 	private Timer pingTimer;
 	
+	private MultiGameController gameController;
+	
 	WritingQueue toSendQueue;
 	
 	MultiGameOptionsFrame lobbyFrame;
@@ -36,6 +38,7 @@ public class ConnectionToServer implements Runnable {
 	
 	public ConnectionToServer(String playerName, MultiGameOptionsFrame lobbyFrame) {
 		this.playerName = playerName;
+		System.out.println("This client player name:" + playerName);
 		this.lobbyFrame = lobbyFrame;
 		
 		lobbyFrame.clearPendingDetails();
@@ -78,6 +81,10 @@ public class ConnectionToServer implements Runnable {
 		pingTimer.scheduleAtFixedRate(task, 4000, 4000);
 	}
 	
+	synchronized String getClientPlayerName() {
+		return playerName;
+	}
+	
 	synchronized void processInput(String input) {
 		String[] arguments = input.split(":");
 		switch(arguments[0]) {
@@ -115,13 +122,16 @@ public class ConnectionToServer implements Runnable {
 			case "Game":
 				if(input.equals("Game:Start")) {
 					lobbyFrame.setVisible(false);
-					new MultiGameMainFrame().setVisible(true);
+					MultiGameMainFrame multiFrame = new MultiGameMainFrame(this);
+					multiFrame.setVisible(true);
+					gameController = multiFrame.getGameController();
 				} else {
-					//TODO: handle communication with server during game
+					input = input.replaceFirst("Game:", "");
+					gameController.processInput(input);
 				}
 				break;
 			default:
-				System.out.println(input);
+				System.out.println("Connection to server" + input);
 		}
 	}
 	

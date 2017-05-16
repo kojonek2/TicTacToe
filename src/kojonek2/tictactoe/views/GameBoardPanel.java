@@ -14,7 +14,7 @@ import javax.swing.JPanel;
 
 import kojonek2.tictactoe.common.Field;
 import kojonek2.tictactoe.common.FieldState;
-import kojonek2.tictactoe.common.LocalGameController;
+import kojonek2.tictactoe.common.GameController;
 
 @SuppressWarnings("serial")
 public abstract class GameBoardPanel extends JPanel implements ComponentListener, MouseListener {
@@ -23,7 +23,7 @@ public abstract class GameBoardPanel extends JPanel implements ComponentListener
 	
 	private Field startedDragAtField = null;
 	
-	private LocalGameController gameController;
+	private GameController gameController;
 
 	/**
 	 * Create game Board
@@ -37,8 +37,12 @@ public abstract class GameBoardPanel extends JPanel implements ComponentListener
 	
 	public abstract void updateInformationLabel();
 	
-	public void createGameController(int sizeOfBoard, int fieldsNeededForWin) {
-		this.gameController = new LocalGameController(this, sizeOfBoard, fieldsNeededForWin);
+	public void setGameController(GameController gameController) {
+		if(gameController == null) {
+			System.err.println("GameBoardPanel:setGameController - game controller can't be null");
+			return;
+		}
+		this.gameController = gameController;
 	}
 	
 	public void setInformationLabel(JLabel informationLabel) {
@@ -52,7 +56,7 @@ public abstract class GameBoardPanel extends JPanel implements ComponentListener
 		return informationLabel;
 	}
 	
-	public LocalGameController getGameController() {
+	public GameController getGameController() {
 		return gameController;
 	}
 	

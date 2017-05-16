@@ -60,7 +60,7 @@ public class LocalGameMainFrame extends JFrame {
 		componentsInitialization(sizeOfGameBoard, fieldsNeededForWin);
 		eventsInitialization();
 		
-		gameController = gameBoardPanel.getGameController();
+		gameController = (LocalGameController) gameBoardPanel.getGameController();
 
 		if (circlePlayerName != null && crossPlayerName != null) {
 			gameController.setPlayerName(FieldState.CIRCLE, circlePlayerName);
