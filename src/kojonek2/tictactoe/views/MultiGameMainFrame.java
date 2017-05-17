@@ -11,6 +11,7 @@ import javax.swing.border.EmptyBorder;
 
 import kojonek2.tictactoe.common.ConnectionToServer;
 import kojonek2.tictactoe.common.MultiGameController;
+import javax.swing.LayoutStyle.ComponentPlacement;
 
 @SuppressWarnings("serial")
 public class MultiGameMainFrame extends JFrame {
@@ -53,15 +54,24 @@ public class MultiGameMainFrame extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		
-		multiGameBoardPanel = new MultiGameBoardPanel((JLabel) null, 3, 3, connection);
+		JLabel lblInformation = new JLabel("New label");
+		
+		multiGameBoardPanel = new MultiGameBoardPanel(lblInformation, 3, 3, connection);
+		
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
-				.addComponent(multiGameBoardPanel, GroupLayout.DEFAULT_SIZE, 434, Short.MAX_VALUE)
+				.addGroup(gl_contentPane.createSequentialGroup()
+					.addComponent(lblInformation)
+					.addContainerGap(388, Short.MAX_VALUE))
+				.addComponent(multiGameBoardPanel, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 434, Short.MAX_VALUE)
 		);
 		gl_contentPane.setVerticalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
-				.addComponent(multiGameBoardPanel, GroupLayout.DEFAULT_SIZE, 261, Short.MAX_VALUE)
+				.addGroup(gl_contentPane.createSequentialGroup()
+					.addComponent(lblInformation)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(multiGameBoardPanel, GroupLayout.DEFAULT_SIZE, 241, Short.MAX_VALUE))
 		);
 		contentPane.setLayout(gl_contentPane);
 	}
