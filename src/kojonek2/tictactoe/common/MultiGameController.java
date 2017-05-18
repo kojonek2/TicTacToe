@@ -5,9 +5,12 @@ import java.awt.Toolkit;
 import javax.swing.JOptionPane;
 
 import kojonek2.tictactoe.views.GameBoardPanel;
+import kojonek2.tictactoe.views.MultiWinnerAnnouncer;
 
 public class MultiGameController extends GameController {
 
+	private Object lock1 = new Object();
+	
 	private ConnectionToServer connection;
 	
 	private String clientPlayerName;
@@ -17,6 +20,7 @@ public class MultiGameController extends GameController {
 	private FieldState opponentState;
 	
 	private boolean isSynchronizing = false;
+	private boolean jOptionPaneIsUp = false;
 	
 	public MultiGameController(GameBoardPanel gameBoardPanel, int sizeOfBoard, int fieldsNeededForWin, ConnectionToServer connection) {
 		super(gameBoardPanel, sizeOfBoard, fieldsNeededForWin);
@@ -37,6 +41,28 @@ public class MultiGameController extends GameController {
 	
 	public String getOpponentPlayerName() {
 		return opponentPlayerName;
+	}
+	
+	public boolean isJOptionPaneUp() {
+		synchronized(lock1) {
+			return jOptionPaneIsUp;
+		}
+	}
+
+	public void setJOptionPaneUp(boolean jOptionPaneIsUp) {
+		synchronized(lock1) {
+			this.jOptionPaneIsUp = jOptionPaneIsUp;
+		}
+	}
+
+	public void goBackToLobby(boolean opponentLeft) {
+		if(opponentLeft) {
+			Toolkit.getDefaultToolkit().beep();
+			JOptionPane.showMessageDialog(gameBoardPanel, "Your opponent has left game.", "Opponent left", JOptionPane.INFORMATION_MESSAGE);
+		}
+		connection.getMultiFrame().dispose();
+		connection.lobbyFrame.setVisible(true);
+		connection.toSendQueue.put("Connected:" + clientPlayerName);
 	}
 
 	@Override
@@ -83,11 +109,18 @@ public class MultiGameController extends GameController {
 					playerTurn = FieldState.fromInt(Integer.parseInt(arguments[2]));
 				}
 				break;
+			case "Ended":
+				if(arguments[1].equals("Quit")) {
+					goBackToLobby(true);
+				} else if(arguments[1].equals("Winner") || arguments[1].equals("Draw")) {
+					announceWinner(arguments);
+				}
+				break;
 			default:
 				System.out.println("GameController:     " + input);
 		}
 	}
-	
+
 	private void processSetPlayersNames(String input) {
 		clientPlayerName = connection.getClientPlayerName();
 		opponentPlayerName = input.replaceFirst("Name:", "");
@@ -112,6 +145,40 @@ public class MultiGameController extends GameController {
 	private void showUpdateMessage() {
 		Toolkit.getDefaultToolkit().beep();
 		String message = "Synchronzied information with server. \n" + (playerTurn == clientState ? "Your turn!" : "Opponent's turn!");
-		JOptionPane.showMessageDialog(gameBoardPanel, message, "Synchronized", JOptionPane.WARNING_MESSAGE);
+		JOptionPane.showMessageDialog(gameBoardPanel, message, "Synchronized", JOptionPane.INFORMATION_MESSAGE);
+	}
+	
+	private void announceWinner(String[] arguments) {
+		synchronized(this) {
+			while(isJOptionPaneUp()) {
+				try {
+					wait();
+				} catch (InterruptedException e) {
+					System.err.println("MultiGameContoller: announce winner");
+					e.printStackTrace();
+				}
+			}
+			if(connection.lobbyFrame.isVisible()) {
+				//already in lobby
+				return;
+			}
+			
+			String information = null;
+			if(arguments[1].equals("Winner")) {
+				FieldState winner = FieldState.fromInt(Integer.parseInt(arguments[2]));
+				if(winner == clientState) {
+					information = "You have won!";
+				} else if(winner == opponentState) {
+					information = "Opponent has won!";
+				} else {
+					System.err.println("MultiGameController wrong state");
+				}
+			}
+			if(arguments[0].equals("Draw")) {
+				information = "Draw!";
+			}
+			
+			new MultiWinnerAnnouncer(this, information).setVisible(true);;
+		}
 	}
 }

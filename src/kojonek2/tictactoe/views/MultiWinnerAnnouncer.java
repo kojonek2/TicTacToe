@@ -12,63 +12,54 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
-import kojonek2.tictactoe.common.LocalGameController;
+import kojonek2.tictactoe.common.MultiGameController;
 
 @SuppressWarnings("serial")
-public class WinnerAnnouncer extends JDialog {
-
+public class MultiWinnerAnnouncer extends JDialog {
+	
 	private final JPanel contentPanel;
-	private LocalGameController gameController;
+	private MultiGameController gameController;
 	
 	private JLabel lblInfo;
+	private JLabel lblGameRequest;
 	
-	private JButton btnNewGame;
-	private JButton btnCancel;
+	private JButton btnQuit;
+	private JButton btnGoToLobby;
+	private JButton btnPlayAgain;
+	
+
 	
 	/**
 	 * Create the dialog.
 	 */
-	public WinnerAnnouncer(LocalGameController gameController, String winnerName) {
+	public MultiWinnerAnnouncer(MultiGameController gameController, String information) {
 		setTitle("Tic Tac Toe - Game Ended");
 		this.gameController = gameController;
 
 		setModal(true);
 
 		contentPanel = new JPanel();
+		
 		componentsInitialization();
+		lblInfo.setText(information);
 		eventsInitialization();
-
-		if (winnerName != null) {
-			setInfoLabelText(winnerName + " has won!");
-		} else {
-			setInfoLabelText("Draw!");
-		}
 	}
-
-	private void setInfoLabelText(String text) {
-		lblInfo.setText(text);
-	}
-
+	
+	
 	/**
 	 * Adding event listeners to components
 	 */
 	private void eventsInitialization() {
-		btnCancel.addActionListener((e) -> dispose());
-
-		btnNewGame.addActionListener((e) -> {
-			gameController.startNewGame();
-			dispose();
-		});
 	}
-
+	
 	/**
 	 * Initializing components generated via Window Builder
 	 */
 	private void componentsInitialization() {
 		setMinimumSize(new Dimension(200, 100));
 		setIconImage(Toolkit.getDefaultToolkit()
-				.getImage(WinnerAnnouncer.class.getResource("/kojonek2/tictactoe/resources/tic-tac-toe_16.png")));
-		setBounds(100, 100, 250, 150);
+				.getImage(LocalWinnerAnnouncer.class.getResource("/kojonek2/tictactoe/resources/tic-tac-toe_16.png")));
+		setBounds(100, 100, 400, 150);
 		
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -79,19 +70,28 @@ public class WinnerAnnouncer extends JDialog {
 		lblInfo.setHorizontalAlignment(SwingConstants.CENTER);
 		contentPanel.add(lblInfo, BorderLayout.CENTER);
 		{
+			lblGameRequest = new JLabel("You can press \"Play again\" to request another round");
+			lblGameRequest.setHorizontalAlignment(SwingConstants.CENTER);
+			contentPanel.add(lblGameRequest, BorderLayout.SOUTH);
+		}
+		{
 			JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
-				btnNewGame = new JButton("New Game");
-				buttonPane.add(btnNewGame);
-				getRootPane().setDefaultButton(btnNewGame);
+				btnPlayAgain = new JButton("Play Again");
+				buttonPane.add(btnPlayAgain);
 			}
 			{
-				btnCancel = new JButton("Cancel");
-				buttonPane.add(btnCancel);
+				btnQuit = new JButton("Quit");
+				buttonPane.add(btnQuit);
+				getRootPane().setDefaultButton(btnQuit);
+			}
+			{
+				btnGoToLobby = new JButton("Go back to lobby");
+				buttonPane.add(btnGoToLobby);
 			}
 		}
 	}
-
+	
 }

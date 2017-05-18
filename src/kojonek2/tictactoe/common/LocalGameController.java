@@ -10,7 +10,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import kojonek2.tictactoe.views.GameBoardPanel;
-import kojonek2.tictactoe.views.WinnerAnnouncer;
+import kojonek2.tictactoe.views.LocalWinnerAnnouncer;
 
 public class LocalGameController extends GameController {
 	
@@ -140,7 +140,7 @@ public class LocalGameController extends GameController {
 			System.err.println("GameBoradPanel - announceWinner: invalid Winner");
 		}
 		
-		JDialog dialog = new WinnerAnnouncer(this, winnerName);
+		JDialog dialog = new LocalWinnerAnnouncer(this, winnerName);
 		dialog.setVisible(true);
 		gameEnded = true;
 	}

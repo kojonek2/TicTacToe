@@ -73,7 +73,7 @@ public class AboutDialog extends JDialog {
 	private void componentsInitialization() {
 		setMinimumSize(new Dimension(200, 100));
 		setIconImage(Toolkit.getDefaultToolkit()
-				.getImage(WinnerAnnouncer.class.getResource("/kojonek2/tictactoe/resources/tic-tac-toe_16.png")));
+				.getImage(LocalWinnerAnnouncer.class.getResource("/kojonek2/tictactoe/resources/tic-tac-toe_16.png")));
 		setBounds(100, 100, 800, 500);
 		
 		getContentPane().setLayout(new BorderLayout());

@@ -22,6 +22,7 @@ public class ConnectionToServer implements Runnable {
 	private Timer pingTimer;
 	
 	private MultiGameController gameController;
+	private MultiGameMainFrame multiFrame;
 	
 	WritingQueue toSendQueue;
 	
@@ -85,6 +86,15 @@ public class ConnectionToServer implements Runnable {
 		return playerName;
 	}
 	
+	synchronized MultiGameMainFrame getMultiFrame() {
+		return multiFrame;
+	}
+	
+	public synchronized void goBackToLobby() {
+		gameController.goBackToLobby(false);
+		toSendQueue.put("Game:Quit");
+	}
+	
 	synchronized void processInput(String input) {
 		String[] arguments = input.split(":");
 		switch(arguments[0]) {
@@ -122,7 +132,7 @@ public class ConnectionToServer implements Runnable {
 			case "Game":
 				if(input.equals("Game:Start")) {
 					lobbyFrame.setVisible(false);
-					MultiGameMainFrame multiFrame = new MultiGameMainFrame(this);
+					multiFrame = new MultiGameMainFrame(this);
 					multiFrame.setVisible(true);
 					gameController = multiFrame.getGameController();
 				} else {
@@ -276,5 +286,4 @@ public class ConnectionToServer implements Runnable {
 		toSendQueue.put("Invite:Cancel:" + player.getIdOfConnection());
 	}
 	
-
 }

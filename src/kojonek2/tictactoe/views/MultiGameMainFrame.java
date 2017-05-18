@@ -12,20 +12,30 @@ import javax.swing.border.EmptyBorder;
 import kojonek2.tictactoe.common.ConnectionToServer;
 import kojonek2.tictactoe.common.MultiGameController;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.JMenuBar;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 
 @SuppressWarnings("serial")
 public class MultiGameMainFrame extends JFrame {
+	
+	private ConnectionToServer connection;
 
 	private JPanel contentPane;
 	private MultiGameBoardPanel multiGameBoardPanel;
+	private JMenuBar menuBar;
+	private JMenu mnGame;
+	private JMenuItem miGoBack;
 
 	/**
 	 * Create the frame.
 	 */
 	public MultiGameMainFrame(ConnectionToServer connectionToServer) {
+		this.connection = connectionToServer;
 		setTitle("Tic Tac Toe");
 		
-		componentsInitialization(connectionToServer);
+		componentsInitialization();
 		eventsInitialization();
 	}
 	
@@ -37,18 +47,38 @@ public class MultiGameMainFrame extends JFrame {
 	 * Adding event listeners to components
 	 */
 	private void eventsInitialization() {
-
+		miGoBack.addActionListener((e) -> {
+			MultiGameController gameController = getGameController();
+			synchronized(gameController) {
+				gameController.setJOptionPaneUp(true);
+				int result = JOptionPane.showConfirmDialog(this, "Do you want to go back to lobby?");
+				if(result == JOptionPane.YES_OPTION) {
+					connection.goBackToLobby();
+				}
+				gameController.setJOptionPaneUp(false);
+				gameController.notify();
+			}
+		});
 	}
 	
 	/**
 	 * Initializing components generated via Window Builder
 	 */
-	private void componentsInitialization(ConnectionToServer connection) {
+	private void componentsInitialization() {
 		setResizable(false);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(WelcomeFrame.class.getResource("/kojonek2/tictactoe/resources/tic-tac-toe_16.png")));
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
+		
+		menuBar = new JMenuBar();
+		setJMenuBar(menuBar);
+		
+		mnGame = new JMenu("Game");
+		menuBar.add(mnGame);
+		
+		miGoBack = new JMenuItem("Go back to lobby");
+		mnGame.add(miGoBack);
 		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
