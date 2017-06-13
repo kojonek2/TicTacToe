@@ -9,9 +9,12 @@ import kojonek2.tictactoe.common.MultiGameController;
 
 @SuppressWarnings("serial")
 public class MultiGameBoardPanel extends GameBoardPanel {
+	
+	public MultiGameMainFrame parent;
 
-	public MultiGameBoardPanel(JLabel jLabel, int sizeOfBoard, int fieldsNeededForWin, ConnectionToServer connection) {
+	public MultiGameBoardPanel(MultiGameMainFrame parent, JLabel jLabel, int sizeOfBoard, int fieldsNeededForWin, ConnectionToServer connection) {
 		super();
+		this.parent = parent;
 		setGameController(new MultiGameController(this, sizeOfBoard, fieldsNeededForWin, connection));
 		setInformationLabel(jLabel);
 	}

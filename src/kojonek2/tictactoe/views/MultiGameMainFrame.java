@@ -53,9 +53,24 @@ public class MultiGameMainFrame extends JFrame {
 				gameController.setJOptionPaneUp(true);
 				int result = JOptionPane.showConfirmDialog(this, "Do you want to go back to lobby?");
 				if(result == JOptionPane.YES_OPTION) {
-					connection.goBackToLobby();
+					if(gameController.hasOpponentWon() && !gameController.hasOpponentleft()) {
+						Toolkit.getDefaultToolkit().beep();
+						JOptionPane.showMessageDialog(this, "Game has ended your opponent has won when you have been leaving!");
+						connection.goBackAndInformOpponent();
+					} else if(gameController.hasOpponentWon() && gameController.hasOpponentleft()) {
+						Toolkit.getDefaultToolkit().beep();
+						JOptionPane.showMessageDialog(this, "Game has ended your opponent has won when you have been leaving!");
+						gameController.goBackToLobby(false);
+					} else if(gameController.hasOpponentleft()) {
+							gameController.goBackToLobby(false);
+					} else  {
+						connection.goBackAndInformOpponent();
+					}
 				}
 				gameController.setJOptionPaneUp(false);
+				if(gameController.hasOpponentleft()) {
+					gameController.goBackToLobby(true);
+				}
 				gameController.notify();
 			}
 		});
@@ -86,7 +101,7 @@ public class MultiGameMainFrame extends JFrame {
 		
 		JLabel lblInformation = new JLabel("New label");
 		
-		multiGameBoardPanel = new MultiGameBoardPanel(lblInformation, 3, 3, connection);
+		multiGameBoardPanel = new MultiGameBoardPanel(this, lblInformation, 3, 3, connection);
 		
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(

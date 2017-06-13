@@ -22,7 +22,7 @@ public class WritingQueue {
 		return queue.remove(0);
 	}
 	
-	synchronized void put(String toSend) {
+	public synchronized void put(String toSend) {
 		queue.add(toSend);
 		notify();
 	}

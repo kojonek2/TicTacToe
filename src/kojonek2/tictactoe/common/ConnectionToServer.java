@@ -24,7 +24,7 @@ public class ConnectionToServer implements Runnable {
 	private MultiGameController gameController;
 	private MultiGameMainFrame multiFrame;
 	
-	WritingQueue toSendQueue;
+	public WritingQueue toSendQueue;
 	
 	MultiGameOptionsFrame lobbyFrame;
 	
@@ -90,7 +90,7 @@ public class ConnectionToServer implements Runnable {
 		return multiFrame;
 	}
 	
-	public synchronized void goBackToLobby() {
+	public void goBackAndInformOpponent() {
 		gameController.goBackToLobby(false);
 		toSendQueue.put("Game:Quit");
 	}

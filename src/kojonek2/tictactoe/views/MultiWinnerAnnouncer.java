@@ -21,11 +21,9 @@ public class MultiWinnerAnnouncer extends JDialog {
 	private MultiGameController gameController;
 	
 	private JLabel lblInfo;
-	private JLabel lblGameRequest;
 	
 	private JButton btnQuit;
 	private JButton btnGoToLobby;
-	private JButton btnPlayAgain;
 	
 
 	
@@ -33,6 +31,8 @@ public class MultiWinnerAnnouncer extends JDialog {
 	 * Create the dialog.
 	 */
 	public MultiWinnerAnnouncer(MultiGameController gameController, String information) {
+		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+		
 		setTitle("Tic Tac Toe - Game Ended");
 		this.gameController = gameController;
 
@@ -50,6 +50,20 @@ public class MultiWinnerAnnouncer extends JDialog {
 	 * Adding event listeners to components
 	 */
 	private void eventsInitialization() {
+		btnGoToLobby.addActionListener((e) -> {
+			if(gameController.hasOpponentleft()) {
+				gameController.goBackToLobby(false);
+			} else  {
+			gameController.connection.goBackAndInformOpponent();
+			}
+			dispose();
+		});
+		btnQuit.addActionListener((e) -> {
+			if(!gameController.hasOpponentleft()) {
+				gameController.connection.toSendQueue.put("Game:Quit");
+			} 
+			System.exit(0);
+		});
 	}
 	
 	/**
@@ -70,18 +84,9 @@ public class MultiWinnerAnnouncer extends JDialog {
 		lblInfo.setHorizontalAlignment(SwingConstants.CENTER);
 		contentPanel.add(lblInfo, BorderLayout.CENTER);
 		{
-			lblGameRequest = new JLabel("You can press \"Play again\" to request another round");
-			lblGameRequest.setHorizontalAlignment(SwingConstants.CENTER);
-			contentPanel.add(lblGameRequest, BorderLayout.SOUTH);
-		}
-		{
 			JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
-			{
-				btnPlayAgain = new JButton("Play Again");
-				buttonPane.add(btnPlayAgain);
-			}
 			{
 				btnQuit = new JButton("Quit");
 				buttonPane.add(btnQuit);

@@ -18,7 +18,7 @@ import kojonek2.tictactoe.common.GameController;
 
 @SuppressWarnings("serial")
 public abstract class GameBoardPanel extends JPanel implements ComponentListener, MouseListener {
-
+	
 	private JLabel informationLabel;
 	
 	private Field startedDragAtField = null;

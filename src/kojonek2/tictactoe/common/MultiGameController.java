@@ -5,13 +5,18 @@ import java.awt.Toolkit;
 import javax.swing.JOptionPane;
 
 import kojonek2.tictactoe.views.GameBoardPanel;
+import kojonek2.tictactoe.views.MultiGameBoardPanel;
 import kojonek2.tictactoe.views.MultiWinnerAnnouncer;
 
 public class MultiGameController extends GameController {
 
 	private Object lock1 = new Object();
+	private Object lock2 = new Object();
+	private Object lock3 = new Object();
+	private Object lock4 = new Object();
+	private Object lock5 = new Object();
 	
-	private ConnectionToServer connection;
+	public ConnectionToServer connection;
 	
 	private String clientPlayerName;
 	private String opponentPlayerName;
@@ -21,6 +26,10 @@ public class MultiGameController extends GameController {
 	
 	private boolean isSynchronizing = false;
 	private boolean jOptionPaneIsUp = false;
+	private boolean hasPlayerLeft = false;
+	private boolean hasOpponentLeft = false;
+	private boolean hasOpponentWon = false; //TODO set to false when new game starts!!!!!!!!!!!
+	private boolean winningPaneWasUp = false;
 	
 	public MultiGameController(GameBoardPanel gameBoardPanel, int sizeOfBoard, int fieldsNeededForWin, ConnectionToServer connection) {
 		super(gameBoardPanel, sizeOfBoard, fieldsNeededForWin);
@@ -43,6 +52,42 @@ public class MultiGameController extends GameController {
 		return opponentPlayerName;
 	}
 	
+	public void setOpponentWon(boolean b) {
+		synchronized(lock3) {
+			hasOpponentWon = b;
+		}
+	}
+	
+	public boolean hasOpponentWon() {
+		synchronized(lock3) {
+			return hasOpponentWon;
+		}
+	}
+	
+	public void setPlayerLeft(boolean b) {
+		synchronized(lock4) {
+			hasPlayerLeft = b;
+		}
+	}
+	
+	public boolean hasPlayerLeft() {
+		synchronized(lock4) {
+			return hasPlayerLeft;
+		}
+	}
+	
+	public void setOpponentleft(boolean b) {
+		synchronized(lock2) {
+			hasOpponentLeft = b;
+		}
+	}
+	
+	public boolean hasOpponentleft() {
+		synchronized(lock2) {
+			return hasOpponentLeft;
+		}
+	}
+	
 	public boolean isJOptionPaneUp() {
 		synchronized(lock1) {
 			return jOptionPaneIsUp;
@@ -54,13 +99,39 @@ public class MultiGameController extends GameController {
 			this.jOptionPaneIsUp = jOptionPaneIsUp;
 		}
 	}
+	
+	public boolean wasWinningPaneUp() {
+		synchronized(lock5) {
+			return winningPaneWasUp;
+		}
+	}
+
+	public void setWinningPaneUp(boolean winningPaneWasUp) {
+		synchronized(lock5) {
+			this.winningPaneWasUp = winningPaneWasUp;
+		}
+	}
 
 	public void goBackToLobby(boolean opponentLeft) {
+		if(hasPlayerLeft()) {
+			//player has already left game
+			return;
+		}
 		if(opponentLeft) {
+			setOpponentleft(true);
+			if(isJOptionPaneUp()) {
+				//player is deciding if he want's to leave				
+				return;
+			}
+			if(wasWinningPaneUp()) {
+				//player had to chose that he want to leave
+				return;
+			}
 			Toolkit.getDefaultToolkit().beep();
 			JOptionPane.showMessageDialog(gameBoardPanel, "Your opponent has left game.", "Opponent left", JOptionPane.INFORMATION_MESSAGE);
 		}
-		connection.getMultiFrame().dispose();
+		setPlayerLeft(true);
+		((MultiGameBoardPanel) gameBoardPanel).parent.dispose();
 		connection.lobbyFrame.setVisible(true);
 		connection.toSendQueue.put("Connected:" + clientPlayerName);
 	}
@@ -111,8 +182,10 @@ public class MultiGameController extends GameController {
 				break;
 			case "Ended":
 				if(arguments[1].equals("Quit")) {
+					System.out.println("quit");
 					goBackToLobby(true);
 				} else if(arguments[1].equals("Winner") || arguments[1].equals("Draw")) {
+					setOpponentWon(true);
 					announceWinner(arguments);
 				}
 				break;
@@ -157,6 +230,10 @@ public class MultiGameController extends GameController {
 					System.err.println("MultiGameContoller: announce winner");
 					e.printStackTrace();
 				}
+				if(hasOpponentLeft) {
+					//opponent left and player was redirected to lobby
+					return;
+				}
 			}
 			if(connection.lobbyFrame.isVisible()) {
 				//already in lobby
@@ -172,13 +249,15 @@ public class MultiGameController extends GameController {
 					information = "Opponent has won!";
 				} else {
 					System.err.println("MultiGameController wrong state");
+					return;
 				}
 			}
 			if(arguments[0].equals("Draw")) {
 				information = "Draw!";
 			}
 			
-			new MultiWinnerAnnouncer(this, information).setVisible(true);;
+			setWinningPaneUp(true);
+			new MultiWinnerAnnouncer(this, information).setVisible(true);
 		}
 	}
 }
