@@ -37,7 +37,7 @@ public class ConnectionToServer implements Runnable {
 	private List<Player> playersInLobby;
 	private List<Invite> invites;
 	
-	public ConnectionToServer(String playerName, MultiGameOptionsFrame lobbyFrame) {
+	public ConnectionToServer(String playerName, MultiGameOptionsFrame lobbyFrame, String ip, int port) {
 		this.playerName = playerName;
 		System.out.println("This client player name:" + playerName);
 		this.lobbyFrame = lobbyFrame;
@@ -50,7 +50,7 @@ public class ConnectionToServer implements Runnable {
 		invites = new ArrayList<Invite>();
 		
 		try {
-			serverSocket = new Socket("localhost", 4554);
+			serverSocket = new Socket(ip, port);
 			serverSocket.setSoTimeout(10000);
 		} catch (IOException e) {
 			System.err.println("Error during establishing connection!");

@@ -25,6 +25,8 @@ public class WelcomeFrame extends JFrame {
 	private JTextField txtPlayerName;
 	private JButton btnPlayWithFriend;
 	private JButton btnConnect;
+	private JTextField txtIp;
+	private JTextField txtPort;
 
 	/**
 	 * Launch the application.
@@ -68,14 +70,62 @@ public class WelcomeFrame extends JFrame {
 		
 		btnConnect.addActionListener((e) -> {
 			String playerName = txtPlayerName.getText().trim();
-			if(playerName != null && !playerName.equals("")) {
-				new MultiGameOptionsFrame(playerName).setVisible(true);
-				dispose();
+			String ip = txtIp.getText().trim();
+			
+			int port;
+			try {
+				port = Integer.parseInt(txtPort.getText().trim());
+			} catch (NumberFormatException exception) {
+				Toolkit.getDefaultToolkit().beep();
+				JOptionPane.showMessageDialog(this, "You need to enter correct server port!", "Warning", JOptionPane.WARNING_MESSAGE);
 				return;
 			}
-			Toolkit.getDefaultToolkit().beep();
-			JOptionPane.showMessageDialog(this, "You need to enter player name!", "Warning", JOptionPane.WARNING_MESSAGE);
+			
+					
+			if (playerName == null || playerName.equals("")) {
+				Toolkit.getDefaultToolkit().beep();
+				JOptionPane.showMessageDialog(this, "You need to enter player name!", "Warning", JOptionPane.WARNING_MESSAGE);
+				return;
+			}
+			if (!isVaildIpv4Adress(ip)) {
+				Toolkit.getDefaultToolkit().beep();
+				JOptionPane.showMessageDialog(this, "You need to enter correct ipv4 of server!", "Warning", JOptionPane.WARNING_MESSAGE);
+				return;
+			}
+			new MultiGameOptionsFrame(playerName, ip, port).setVisible(true);
+			dispose();
 		});
+	}
+	
+	private boolean isVaildIpv4Adress(String adress) {
+		try {
+			if (adress.equals("localhost")) {
+				return true;
+			}
+			
+			if (adress == null || adress.equals("")) {
+				return false;
+			}
+			
+			String[] parts = adress.split("\\.");
+			if (parts.length != 4) {
+				return false;
+			}
+			
+			for (String part : parts) {
+				int i = Integer.parseInt(part);
+				if(i < 0 || i > 255) {
+					return false;
+				}
+			}
+			if (adress.endsWith(".")) {
+				return false;
+			}
+			
+			return true;
+		} catch (NumberFormatException e) {
+			return false;
+		}
 	}
 	
 	/**
@@ -158,29 +208,53 @@ public class WelcomeFrame extends JFrame {
 		JLabel lblNick = new JLabel("Nick:");
 		
 		btnConnect = new JButton("Connect to server");
+		
+		txtIp = new JTextField();
+		txtIp.setColumns(10);
+		
+		JLabel lbIIp = new JLabel("Ip:");
+		
+		JLabel lblPort = new JLabel("Port:");
+		
+		txtPort = new JTextField();
+		txtPort.setColumns(10);
 		GroupLayout gl_panel_2 = new GroupLayout(panel_2);
 		gl_panel_2.setHorizontalGroup(
 			gl_panel_2.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel_2.createSequentialGroup()
-					.addGap(35)
-					.addGroup(gl_panel_2.createParallelGroup(Alignment.TRAILING, false)
-						.addComponent(btnConnect, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-						.addGroup(Alignment.LEADING, gl_panel_2.createSequentialGroup()
-							.addComponent(lblNick)
+					.addGap(33)
+					.addGroup(gl_panel_2.createParallelGroup(Alignment.LEADING)
+						.addComponent(btnConnect, GroupLayout.PREFERRED_SIZE, 147, GroupLayout.PREFERRED_SIZE)
+						.addGroup(gl_panel_2.createSequentialGroup()
+							.addGroup(gl_panel_2.createParallelGroup(Alignment.LEADING)
+								.addComponent(lblPort)
+								.addComponent(lblNick)
+								.addComponent(lbIIp))
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(txtPlayerName, GroupLayout.PREFERRED_SIZE, 109, GroupLayout.PREFERRED_SIZE)))
-					.addContainerGap(36, Short.MAX_VALUE))
+							.addGroup(gl_panel_2.createParallelGroup(Alignment.LEADING)
+								.addComponent(txtPort, GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE)
+								.addComponent(txtIp, GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE)
+								.addComponent(txtPlayerName, GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE))))
+					.addGap(27))
 		);
 		gl_panel_2.setVerticalGroup(
 			gl_panel_2.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel_2.createSequentialGroup()
-					.addGap(60)
+					.addGap(31)
 					.addGroup(gl_panel_2.createParallelGroup(Alignment.BASELINE)
 						.addComponent(txtPlayerName, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(lblNick))
 					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_panel_2.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lbIIp)
+						.addComponent(txtIp, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_panel_2.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblPort)
+						.addComponent(txtPort, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btnConnect)
-					.addContainerGap(60, Short.MAX_VALUE))
+					.addContainerGap(37, Short.MAX_VALUE))
 		);
 		panel_2.setLayout(gl_panel_2);
 		contentPane.setLayout(gl_contentPane);

@@ -70,7 +70,7 @@ public class MultiGameOptionsFrame extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public MultiGameOptionsFrame(String playerName) {
+	public MultiGameOptionsFrame(String playerName, String ip, int port) {
 		setTitle("Tic Tac Toe - Lobby");
 
 		componentsInitialization();
@@ -79,7 +79,7 @@ public class MultiGameOptionsFrame extends JFrame {
 		listInvite.setModel(new DefaultListModel<Player>());
 		listPending.setModel(new DefaultListModel<Invite>());
 		
-		connection = new ConnectionToServer(playerName, this);
+		connection = new ConnectionToServer(playerName, this, ip, port);
 		new Thread(connection).start();
 	}
 	
